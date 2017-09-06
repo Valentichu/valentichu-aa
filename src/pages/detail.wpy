@@ -1,0 +1,54 @@
+<style lang="less">
+  .userinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .userinfo-avatar {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+  }
+
+  .userinfo-nickname {
+    color: #aaa;
+  }
+</style>
+<template>
+  <view class="container">
+
+    <panel>
+      <view class="title" slot="title">明细</view>
+    </panel>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Panel from '../components/panel'
+
+  export default class Detail extends wepy.page {
+    config = {
+      navigationBarTitleText: '活动明细'
+    }
+
+    components = {
+      panel: Panel
+    }
+
+    data = {
+    }
+
+    computed = {}
+
+    methods = {
+    }
+
+    events = {}
+
+    onLoad() {
+    }
+  }
+</script>
