@@ -1,0 +1,84 @@
+<style lang="less">
+  .header {
+    display: flex;
+  }
+  .navbar {
+    height: 100%;
+    padding-bottom: 0;
+    .weui-tab__content {
+      padding-top: 60px;
+      text-align: center;
+    }
+  }
+
+  .sidebar-button{
+    width: 50rpx;
+    height: 50rpx;
+    margin: 10rpx 0 0 60rpx;
+    float: left;
+  }
+
+  .option-button{
+    width: 50rpx;
+    height: 50rpx;
+    margin: 10rpx 60rpx 0 0;
+    float: right;
+  }
+
+  .name{
+  }
+</style>
+<template>
+  <view class="header">
+    <image class="sidebar-button" src="./../images/icon_nav_form.png"></image>
+    <span class="name">aaaa</span>
+    <image class="option-button" src="./../images/icon_nav_nav.png"></image>
+  </view>
+  <view class="navbar">
+    <view class="weui-tab">
+      <view class="weui-navbar">
+        <view wx:for="{{tabs}}" wx:key="*this" id="{{index}}"
+              class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" @tap="tabClick">
+          <view class="weui-navbar__title">{{item}}</view>
+        </view>
+        <view class="weui-navbar__slider"
+              style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
+      </view>
+      <view class="weui-tab__panel">
+        <view class="weui-tab__content" hidden="{{activeIndex != 0}}">选项一的内容</view>
+        <view class="weui-tab__content" hidden="{{activeIndex != 1}}">选项二的内容</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+
+  const sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
+
+  export default class Index extends wepy.page {
+
+    data = {
+      tabs: ['明细', '结算'],
+      activeIndex: 0,
+      sliderOffset: 0,
+      sliderLeft: 0
+    };
+
+    methods = {
+      tabClick(e) {
+        this.sliderOffset = e.currentTarget.offsetLeft;
+        this.activeIndex = e.currentTarget.id;
+      }
+    }
+
+    async onLoad() {
+      let res = await wepy.getSystemInfo();
+
+      this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2;
+      this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex;
+      this.$apply();
+    }
+  }
+</script>

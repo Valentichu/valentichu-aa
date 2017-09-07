@@ -17,23 +17,13 @@
   export default class extends wepy.app {
     config = {
       pages: [
-        'pages/index',
-        'pages/detail'
+        'pages/index'
       ],
       window: {
         backgroundTextStyle: 'light',
         navigationBarBackgroundColor: '#fff',
         navigationBarTitleText: '地主算账',
         navigationBarTextStyle: 'black'
-      },
-      tabBar: {
-        list: [{
-          pagePath: 'pages/index',
-          text: '活动'
-        }, {
-          pagePath: 'pages/detail',
-          text: '明细'
-        }]
       }
     }
 
