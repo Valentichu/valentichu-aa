@@ -1,8 +1,118 @@
 <style lang="less">
+  .type-group {
+    display: flex;
+    justify-content: space-between;
+  }
 
+  .type-group image {
+    flex: 1;
+    width: 120rpx;
+    height: 120rpx;
+    margin-top: 50rpx;
+  }
+
+  .grey {
+    filter: grayscale(1);
+  }
+
+  .consume {
+    color: #1296db;
+  }
 </style>
 <template>
   <view class="page">
+
+    <view class="type-group">
+      <image wx:for="{{types}}"
+             wx:key="*this"
+             id="{{index}}"
+             class="{{index == typeSelected ? '': 'grey'}}"
+             src="./../images/{{item}}.svg"
+             catchtap="changeType">
+      </image>
+    </view>
+
+    <view class="page__bd">
+
+      <view class="weui-toptips weui-toptips_warn" wx:if="{{tipsFlag}}">错误提示</view>
+
+      <view class="weui-cells">
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">金额</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input consume" type="number" placeholder="请输入金额"/>
+          </view>
+        </view>
+
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">描述</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input" placeholder="请输入描述"/>
+          </view>
+        </view>
+
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">支付人</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input" placeholder="请输入姓名"/>
+          </view>
+        </view>
+
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">日期</view>
+          </view>
+          <view class="weui-cell__bd">
+            <picker mode="date" value="{{date}}" start="2015-09-01" end="2017-09-01" @change="bindDateChange">
+              <view class="weui-input">{{date}}</view>
+            </picker>
+          </view>
+        </view>
+      </view>
+
+      <scroll-view class="weui-cells" scroll-y style="height: 500rpx">
+        <checkbox-group @change="checkboxChange">
+          <label class="weui-cell weui-check__label person-item" wx:for="{{checkboxItems}}" wx:key="value">
+            <checkbox class="weui-check" value="{{item.value}}" checked="{{item.checked}}"/>
+
+            <view class="weui-cell__hd weui-check__hd_in-checkbox">
+              <icon class="weui-icon-checkbox_circle" type="circle" size="23" wx:if="{{!item.checked}}"></icon>
+              <icon class="weui-icon-checkbox_success" type="success" size="23" wx:if="{{item.checked}}"></icon>
+            </view>
+            <view class="weui-cell__bd page__title">{{item.name}}</view>
+
+            <view class="weui-cell__bd">
+              <view class="weui-label page__desc">权重</view>
+              <input class="weui-input" type="number" value="{{item.weight}}"/>
+            </view>
+
+            <view class="weui-cell__bd">
+              <view class="weui-label page__title consume">{{item.total}}</view>
+            </view>
+          </label>
+        </checkbox-group>
+      </scroll-view>
+
+      <view class="weui-cells__title">备注</view>
+      <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell">
+          <view class="weui-cell__bd">
+            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em" />
+          </view>
+        </view>
+      </view>
+
+      <view class="weui-btn-area">
+        <button class="weui-btn" type="primary" @tap="showTopTips">确定</button>
+      </view>
+
+    </view>
 
   </view>
 </template>
@@ -14,12 +124,23 @@
   export default class addConsume extends wepy.page {
 
     data = {
-      postModel:{
-      }
+      types: ['餐饮', '娱乐', '住宿', '出行'],
+      checkboxItems: [
+        {name: '陈昕然', value: '0', checked: true,weight:2,total:3000},
+        {name: '宋玥沄', value: '1', checked: true,weight:1,total:3000},
+        {name: '陈昕然', value: '2', checked: true,weight:2,total:3000},
+        {name: '宋玥沄', value: '3', checked: true,weight:1,total:3000},
+        {name: '宋玥沄', value: '4', checked: true,weight:1,total:3000},
+
+      ],
+      postModel: {},
+      typeSelected: 0
     }
 
     methods = {
-
+      changeType(e) {
+        this.typeSelected = e.currentTarget.id;
+      }
     }
   }
 </script>
