@@ -17,7 +17,8 @@
   export default class extends wepy.app {
     config = {
       pages: [
-        'pages/index'
+        'pages/index',
+        'pages/addConsume'
       ],
       window: {
         backgroundTextStyle: 'light',
@@ -54,16 +55,20 @@
               } else {
                 console.log('获取用户登录态失败！' + res.errMsg)
               }
-            })
+            }).catch((error) => {
+              console.log('获取用户登录态失败！' + error)
+            });
           } else {
             console.log('获取用户登录态失败！' + res.errMsg)
           }
-        })
+        }).catch((error) => {
+        console.log('获取用户登录态失败！' + error)
+      })
     }
 
     getUserInfo(callback) {
       if (this.globalData.userInfo) {
-        return this.globalData.userInfo
+        callback && callback(this.globalData.userInfo)
       }
       wepy.getUserInfo({
         success: (res) => {

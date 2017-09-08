@@ -1,0 +1,25 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="page">
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import currency from './../utils/currency'
+
+  export default class addConsume extends wepy.page {
+
+    data = {
+      postModel:{
+      }
+    }
+
+    methods = {
+
+    }
+  }
+</script>

@@ -4,14 +4,27 @@
     justify-content: space-between;
     align-items: center;
   }
-  .navbar {
+
+  .footer {
+    display: flex;
+    align-items: center;
+    height: 15%;
+    width: 100%;
+    border-top: 1rpx solid #CCCCCC;
+  }
+
+  .weui-tab {
+    height: 80%;
+  }
+
+  .display {
     height: 100%;
-    padding-bottom: 0;
-    .weui-tab__content {
-      padding-top: 60px;
-      padding-bottom: 60px;
-      text-align: center;
-    }
+    transition: all 500ms;
+  }
+
+  .hidden {
+    height: 0;
+    transition: all 500ms;
   }
 
   .side-left {
@@ -24,29 +37,31 @@
     float: right;
   }
 
-  .sidebar-button{
+  .sidebar-button {
     width: 50rpx;
     height: 50rpx;
     margin: 20rpx 0 0 60rpx;
   }
 
-  .option-button{
+  .option-button {
     width: 50rpx;
     height: 50rpx;
     margin: 20rpx 60rpx 0 0;
   }
 
-  .page-bottom{
+  .page-bottom {
     height: 100%;
     width: 750rpx;
     z-index: -1;
     position: fixed;
     background: white;
   }
-  .page-side{
+
+  .page-side {
     padding-top: 300rpx;
   }
-  .page-top{
+
+  .page-top {
     height: 100%;
     width: 100%;
     z-index: 0;
@@ -56,62 +71,74 @@
     background: #F8F8F8;
   }
 
-  .content-bottom {
-    height: 20%;
-    width: 100%;
-    border-top:1rpx solid #CCCCCC;
-  }
-
-  .display{
-    width: 100%;
-    height: 80%;
-  }
-
-  .hidden{
-    height: 0;
-  }
-  .transform-left{
-    transform: rotate(0deg) scale(1) translate(50%,0%);
-    -webkit-transform: rotate(0deg) scale(1) translate(50%,0%);
+  .transform-left {
+    transform: rotate(0deg) scale(1) translate(50%, 0%);
+    -webkit-transform: rotate(0deg) scale(1) translate(50%, 0%);
   }
 
   .transform-right {
-    transform: rotate(0deg) scale(1) translate(-50%,0%);
-    -webkit-transform: rotate(0deg) scale(1) translate(-50%,0%);
+    transform: rotate(0deg) scale(1) translate(-50%, 0%);
+    -webkit-transform: rotate(0deg) scale(1) translate(-50%, 0%);
   }
 
   .icon {
     margin-right: 5px;
     vertical-align: middle;
-    width:20px;
+    width: 20px;
     height: 20px;
   }
 
-  .panel {
+  .card {
     background: white;
     height: 200rpx;
     margin: 20rpx;
-    border-radius:20px;
-    box-shadow:2px 2px 3px #aaaaaa;
+    border-radius: 20px;
+    align-items: center;
+    display: flex;
   }
+
+  .card-type {
+    height: 160rpx;
+    width: 160rpx;
+    margin-left: 20rpx;
+    margin-right: 20rpx;
+  }
+
+  .add-button {
+    height: 100rpx;
+    width: 100rpx;
+    margin-left: 40rpx;
+    margin-right: 20rpx;
+  }
+
+  .refund {
+    color: #3CC51F;
+  }
+
+  .pay {
+    color: #C13E3E;
+  }
+
+  .consume {
+    color: #1296db;
+  }
+
 </style>
 <template>
   <view class="page">
     <view class="page-bottom">
       <view class="weui-cells weui-cells_after-title side-left">
         <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">新增活动</view>
           <view class="weui-cell__hd">
-            <image src="./../images/add.png" class="icon"></image>
+            <image src="./../images/新增.svg" class="icon"></image>
           </view>
-          <view class="weui-cell__bd">新建活动</view>
-          <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
         <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-          <view class="weui-cell__hd">
-            <image src="" class="icon"></image>
-          </view>
           <view class="weui-cell__bd">查看活动</view>
-          <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          <view class="weui-cell__hd">
+            <image src="./../images/查看.svg" class="icon"></image>
+          </view>
         </navigator>
       </view>
 
@@ -119,26 +146,26 @@
         <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
           <view class="weui-cell__bd">编辑名称</view>
           <view class="weui-cell__hd">
-            <image src="./../images/add.png" class="icon"></image>
+            <image src="./../images/编辑.svg" class="icon"></image>
           </view>
         </navigator>
         <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
           <view class="weui-cell__bd">编辑成员</view>
           <view class="weui-cell__hd">
-            <image src="./../images/add.png" class="icon"></image>
+            <image src="./../images/编辑.svg" class="icon"></image>
           </view>
         </navigator>
       </view>
     </view>
 
- <view class="page-top {{sideLeft ? 'transform-left' : ''}} {{sideRight ? 'transform-right' : ''}}" catchtap="sidebarClose">
+    <view class="page-top {{sideLeft ? 'transform-left' : ''}} {{sideRight ? 'transform-right' : ''}}"
+          catchtap="sidebarClose">
       <view class="header">
-        <image class="sidebar-button" src="./../images/icon_nav_form.png" catchtap="sideLeftToggle"></image>
-        <span class="name">aaaa</span>
-        <image class="option-button" src="./../images/icon-option.png" catchtap="sideRightToggle"></image>
-      </view>
-      <view class="navbar">
-        <view class="weui-tab">
+          <image class="sidebar-button" src="./../images/菜单.svg" catchtap="sideLeftToggle"></image>
+          <span class="name">蒲江一日游</span>
+          <image class="option-button" src="./../images/设置.svg" catchtap="sideRightToggle"></image>
+        </view>
+      <view class="weui-tab">
           <view class="weui-navbar">
             <view wx:for="{{tabs}}" wx:key="*this" id="{{index}}"
                   class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" catchtap="tabClick">
@@ -148,80 +175,95 @@
                   style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
           </view>
           <view class="weui-tab__panel">
-            <scroll-view class="weui-tab__content" class="{{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
-              <view class="panel">选项一的内容</view>
+            <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
+
+              <view class="card weui-flex">
+                <image class="card-type" src="./../images/付款.svg" alt=""></image>
+                <view class="weui-flex__item">
+                  <view class="weui-flex">
+                    <view class="weui-flex__item page__title">收款</view>
+                    <view class="weui-flex__item page__desc">2017-09-08</view>
+                  </view>
+                  <view class="weui-flex">
+                    <view class="weui-flex__item page__desc">陈昕然</view>
+                    <view class="weui-flex__item page__title">10000.00</view>
+                  </view>
+                </view>
+              </view>
+
+              <view class="card weui-flex">
+                <image class="card-type" src="./../images/餐饮.svg" alt=""></image>
+                <view class="weui-flex__item">
+                  <view class="weui-flex">
+                    <view class="weui-flex__item page__title">肥肠鸡</view>
+                    <view class="weui-flex__item page__desc">2017-09-08</view>
+                  </view>
+                  <view class="weui-flex">
+                    <view class="weui-flex__item page__desc">陈昕然</view>
+                    <view class="weui-flex__item page__title">5000.00</view>
+                  </view>
+                </view>
+              </view>
+
             </scroll-view>
-            <scroll-view class="weui-tab__content"  class="{{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
-              <view>选项二的内容</view>
+            <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
+              <view class="weui-panel weui-panel_access">
+                <view class="weui-panel__bd">
+                  <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                    <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                      <image class="weui-media-box__thumb" src="./../images/用户.svg" />
+                    </view>
+                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                      <view class="weui-media-box__title page__title">陈昕然</view>
+                    </view>
+                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                      <view class="weui-media-box__desc">应补</view>
+                      <view class="weui-media-box__title pay page__title">2500.00</view>
+                    </view>
+                  </navigator>
+
+                  <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                    <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                      <image class="weui-media-box__thumb" src="./../images/用户.svg" />
+                    </view>
+                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                      <view class="weui-media-box__title page__title">宋玥沄</view>
+                    </view>
+                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                      <view class="weui-media-box__desc">应退</view>
+                      <view class="weui-media-box__title refund page__title">2500.00</view>
+                    </view>
+                  </navigator>
+                </view>
+              </view>
             </scroll-view>
-            <view class="content-bottom">
-              交款金额和消费金额
-            </view>
+        </view>
+      </view>
+      <view class="footer">
+        <view class="weui-flex__item">
+          <image class="add-button" src="./../images/添加.svg" alt="" catchtap="showActionSheet"></image>
+        </view>
+        <view class="weui-flex__item">
+          <view class="weui-flex">
+            <view class="weui-flex__item page__desc">消费</view>
+            <view class="weui-flex__item page__desc">收款</view>
+          </view>
+          <view class="weui-flex">
+            <view class="weui-flex__item page__title consume">5000.00</view>
+            <view class="weui-flex__item page__title pay">10000.00</view>
           </view>
         </view>
       </view>
-    </view>
   </view>
 
-
-
+  </view>
 </template>
 
 <script>
-  import wepy from 'wepy';
+  import wepy from 'wepy'
+  import currency from './../utils/currency'
 
-  const sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
+  const sliderWidth = 96 // 需要设置slider的宽度，用于计算中间位置
 
   export default class Index extends wepy.page {
 
@@ -230,8 +272,8 @@
       activeIndex: 0,
       sliderOffset: 0,
       sliderLeft: 0,
-      sideLeft:false,
-      sideRight:false
+      sideLeft: false,
+      sideRight: false
     };
 
     methods = {
@@ -240,24 +282,44 @@
         this.activeIndex = e.currentTarget.id;
       },
       sideLeftToggle() {
-        if(this.sideLeft){
+        if (this.sideLeft) {
           this.sideLeft = false
         } else {
-          this.sideLeft =  true
+          this.sideLeft = true
         }
       },
       sideRightToggle() {
-        if(this.sideRight){
+        if (this.sideRight) {
           this.sideRight = false
         } else {
-          this.sideRight =  true
+          this.sideRight = true
         }
       },
-      sidebarClose(){
-       if(this.sideLeft || this.sideRight) {
-          this.sideLeft=false
-         this.sideRight=false
+      sidebarClose() {
+        if (this.sideLeft || this.sideRight) {
+          this.sideLeft = false
+          this.sideRight = false
         }
+      },
+      showActionSheet() {
+        wepy.showActionSheet({
+          itemList: ['消费', '交款']
+        }).then((res) => {
+          console.log(res.tapIndex)
+          switch (res.tapIndex){
+            case 0:
+              wepy.navigateTo({
+                url: 'addConsume'
+              })
+              break
+            case 1:
+              break
+            default:
+              break
+          }
+        }).catch((error) => {
+          console.log(error);
+        });
       }
     }
 
