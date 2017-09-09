@@ -21,31 +21,26 @@
 </style>
 <template>
   <view class="page">
-
     <view class="type-group">
       <image wx:for="{{types}}"
              wx:key="*this"
              id="{{index}}"
              class="{{index == typeSelected ? '': 'grey'}}"
              src="./../images/{{item}}.svg"
-             catchtap="changeType">
+             catchtap="typeChange">
       </image>
     </view>
-
     <view class="page__bd">
-
       <view class="weui-toptips weui-toptips_warn" wx:if="{{tipsFlag}}">错误提示</view>
-
       <view class="weui-cells">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">金额</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume" type="number" placeholder="请输入金额"/>
+            <input class="weui-input consume" value="{{total}}" type="digit" placeholder="请输入金额" />
           </view>
         </view>
-
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">描述</view>
@@ -54,7 +49,6 @@
             <input class="weui-input" placeholder="请输入描述"/>
           </view>
         </view>
-
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">支付人</view>
@@ -63,84 +57,104 @@
             <input class="weui-input" placeholder="请输入姓名"/>
           </view>
         </view>
-
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">日期</view>
           </view>
           <view class="weui-cell__bd">
-            <picker mode="date" value="{{date}}" start="2015-09-01" end="2017-09-01" @change="bindDateChange">
+            <picker mode="date" value="{{date}}" start="2017-09-01" end="2037-09-01" @change="dateChange">
               <view class="weui-input">{{date}}</view>
             </picker>
           </view>
         </view>
       </view>
-
-      <scroll-view class="weui-cells" scroll-y style="height: 500rpx">
+      <view class="weui-cells">
         <checkbox-group @change="checkboxChange">
-          <label class="weui-cell weui-check__label person-item" wx:for="{{checkboxItems}}" wx:key="value">
-            <checkbox class="weui-check" value="{{item.value}}" checked="{{item.checked}}"/>
-
-            <view class="weui-cell__hd weui-check__hd_in-checkbox">
-              <icon class="weui-icon-checkbox_circle" type="circle" size="23" wx:if="{{!item.checked}}"></icon>
-              <icon class="weui-icon-checkbox_success" type="success" size="23" wx:if="{{item.checked}}"></icon>
-            </view>
-            <view class="weui-cell__bd page__title">{{item.name}}</view>
-
-            <view class="weui-cell__bd">
-              <view class="weui-label page__desc">权重</view>
-              <input class="weui-input" type="number" value="{{item.weight}}"/>
-            </view>
-
-            <view class="weui-cell__bd">
-              <view class="weui-label page__title consume">{{item.total}}</view>
-            </view>
-          </label>
+          <view class="weui-cell weui-cell_input" wx:for="{{checkItems}}" wx:key="value">
+            <label class="weui-cell">
+              <checkbox class="weui-check" value="{{item.id}}" checked="{{item.checked}}"/>
+              <view class="weui-cell__hd weui-check__hd_in-checkbox">
+                <icon class="weui-icon-checkbox_circle" type="circle" size="23" wx:if="{{!item.checked}}"></icon>
+                <icon class="weui-icon-checkbox_success" type="success" size="23" wx:if="{{item.checked}}"></icon>
+              </view>
+              <view class="weui-cell__bd page__title">{{item.name}}</view>
+            </label>
+            <!--将人数换算成weight数组的角标，如果人数为n对应weightRange数组的第[n-1]个，所以需要减1-->
+            <picker class="weui-cell__bd" value="{{item.weight - 1}}" range="{{weightRange}}"
+                    @change="weightChange({{index}})">
+              <view class="weui-input page__desc">人数{{item.weight}}</view>
+            </picker>
+            <view class="weui-cell page__title consume">{{item.total}}</view>
+          </view>
         </checkbox-group>
-      </scroll-view>
-
+      </view>
       <view class="weui-cells__title">备注</view>
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell">
           <view class="weui-cell__bd">
-            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em" />
+            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em"/>
           </view>
         </view>
       </view>
-
       <view class="weui-btn-area">
         <button class="weui-btn" type="primary" @tap="showTopTips">确定</button>
       </view>
-
     </view>
-
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
   import currency from './../utils/currency'
+  import format from  './../utils/format'
 
   export default class addConsume extends wepy.page {
 
+    computed = {
+      weightTotal() {
+        let weightTotal = 0
+        this.checkItems.forEach((item) => {
+          if (item.checked === true) {
+            weightTotal += item.weight
+          }
+        })
+        return weightTotal
+      }
+    }
+
     data = {
       types: ['餐饮', '娱乐', '住宿', '出行'],
-      checkboxItems: [
-        {name: '陈昕然', value: '0', checked: true,weight:2,total:3000},
-        {name: '宋玥沄', value: '1', checked: true,weight:1,total:3000},
-        {name: '陈昕然', value: '2', checked: true,weight:2,total:3000},
-        {name: '宋玥沄', value: '3', checked: true,weight:1,total:3000},
-        {name: '宋玥沄', value: '4', checked: true,weight:1,total:3000},
-
+      typeSelected: 0,
+      total: 0,
+      checkItems: [
+        {name: '陈昕然', id: 0, checked: true, weight: 2, total: 0},
+        {name: '宋玥沄', id: 1, checked: true, weight: 1, total: 0},
       ],
-      postModel: {},
-      typeSelected: 0
+      weightRange: [],
+      date: ''
     }
 
     methods = {
-      changeType(e) {
-        this.typeSelected = e.currentTarget.id;
+      typeChange(e) {
+        this.typeSelected = e.currentTarget.id
+      },
+      weightChange(index, e) {
+        /*数组中第n个元素的值为n+1*/
+        this.checkItems[index].weight = this.weightRange[e.detail.value]
+      },
+      dateChange(e) {
+        this.date = e.detail.value
+      },
+      bindBlur: function(e) {
+        this[e.currentTarget.id] = e.detail.value
       }
+    }
+
+    onLoad() {
+      for (let i = 1; i < 99; i++) {
+        this.weightRange.push(i)
+      }
+      this.date = format.call(new Date(),"yyyy-MM-dd")
     }
   }
 </script>
