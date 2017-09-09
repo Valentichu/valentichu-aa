@@ -31,14 +31,14 @@
       </image>
     </view>
     <view class="page__bd">
-      <view class="weui-toptips weui-toptips_warn" wx:if="{{tipsFlag}}">错误提示</view>
       <view class="weui-cells">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">金额</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume" value="{{total}}" type="digit" placeholder="请输入金额" />
+            <input class="weui-input consume" value="{{total}}" type="digit" placeholder="请输入金额" id="total"
+                   bindblur="bindBlur"/>
           </view>
         </view>
         <view class="weui-cell weui-cell_input">
@@ -46,7 +46,7 @@
             <view class="weui-label">描述</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="请输入描述"/>
+            <input class="weui-input" placeholder="请输入描述" id="description" bindblur="bindBlur"/>
           </view>
         </view>
         <view class="weui-cell weui-cell_input">
@@ -54,7 +54,7 @@
             <view class="weui-label">支付人</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="请输入姓名"/>
+            <input class="weui-input" placeholder="请输入姓名" id="name" bindblur="bindBlur"/>
           </view>
         </view>
         <view class="weui-cell weui-cell_input">
@@ -69,10 +69,10 @@
         </view>
       </view>
       <view class="weui-cells">
-        <checkbox-group @change="checkboxChange">
+        <checkbox-group @change="checkChange">
           <view class="weui-cell weui-cell_input" wx:for="{{checkItems}}" wx:key="value">
             <label class="weui-cell">
-              <checkbox class="weui-check" value="{{item.id}}" checked="{{item.checked}}"/>
+              <checkbox class="weui-check" value="{{index}}" checked="{{item.checked}}"/>
               <view class="weui-cell__hd weui-check__hd_in-checkbox">
                 <icon class="weui-icon-checkbox_circle" type="circle" size="23" wx:if="{{!item.checked}}"></icon>
                 <icon class="weui-icon-checkbox_success" type="success" size="23" wx:if="{{item.checked}}"></icon>
@@ -92,7 +92,7 @@
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell">
           <view class="weui-cell__bd">
-            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em"/>
+            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em" id="note" bindblur="bindBlur"/>
           </view>
         </view>
       </view>
@@ -106,7 +106,9 @@
 <script>
   import wepy from 'wepy'
   import currency from './../utils/currency'
-  import format from  './../utils/format'
+  import formatString from './../utils/format'
+
+  Date.prototype.formatString = formatString;
 
   export default class addConsume extends wepy.page {
 
@@ -119,17 +121,36 @@
           }
         })
         return weightTotal
+      },
+      computeCheckItem() {
+        this.checkItems.forEach((item, index) => {
+          // 先计算此人是否被选中
+          // index是number，数组里面是string,需要转换
+          if (this.checkedItemIndex.indexOf(index.toString()) != -1) {
+            item.checked = true
+          } else {
+            item.checked = false
+          }
+
+          // 计算此人的分摊费用
+          if (item.checked === true) {
+            item.total = (this.total / this.weightTotal * item.weight).toFixed(2)
+          }
+          else {
+            // 统一显示格式为2位小数
+            item.total = Number(0).toFixed(2)
+          }
+        })
+        this.$apply()
       }
     }
 
     data = {
       types: ['餐饮', '娱乐', '住宿', '出行'],
       typeSelected: 0,
-      total: 0,
-      checkItems: [
-        {name: '陈昕然', id: 0, checked: true, weight: 2, total: 0},
-        {name: '宋玥沄', id: 1, checked: true, weight: 1, total: 0},
-      ],
+      total: '',
+      checkItems: [],
+      checkedItemIndex: [],
       weightRange: [],
       date: ''
     }
@@ -139,14 +160,27 @@
         this.typeSelected = e.currentTarget.id
       },
       weightChange(index, e) {
-        /*数组中第n个元素的值为n+1*/
         this.checkItems[index].weight = this.weightRange[e.detail.value]
       },
       dateChange(e) {
         this.date = e.detail.value
       },
-      bindBlur: function(e) {
-        this[e.currentTarget.id] = e.detail.value
+      checkChange(e) {
+        this.checkedItemIndex = e.detail.value
+      },
+      bindBlur: function (e) {
+        if (e.currentTarget.id === 'total') {
+          let value = Number(e.detail.value)
+          if (Number.isNaN(value)) {
+            value = 0
+          }
+          if (this.total !== value) {
+            this.total = value
+            this.$apply()
+          }
+        } else {
+          this[e.currentTarget.id] = e.detail.value
+        }
       }
     }
 
@@ -154,7 +188,16 @@
       for (let i = 1; i < 99; i++) {
         this.weightRange.push(i)
       }
-      this.date = format.call(new Date(),"yyyy-MM-dd")
+      this.date = new Date().formatString("yyyy-MM-dd")
+      this.checkItems = [
+        {name: '陈昕然', id: 111, checked: true, weight: 2, total: 0},
+        {name: '宋玥沄', id: 2221, checked: true, weight: 1, total: 0},
+      ]
+      this.checkedItemIndex = []
+      this.checkItems.forEach((item, index) => {
+        // 与checkboxChange返回的数组保持一致为字符串数组
+        this.checkedItemIndex.push(index.toString())
+      })
     }
   }
 </script>
