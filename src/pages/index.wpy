@@ -19,12 +19,12 @@
 
   .display {
     height: 100%;
-    transition: all 500ms;
+    transition: ease .5s;
   }
 
   .hidden {
     height: 0;
-    transition: all 500ms;
+    transition: ease .5s;
   }
 
   .side-left {
@@ -313,6 +313,9 @@
               })
               break
             case 1:
+              wepy.navigateTo({
+                url: 'addFund'
+              })
               break
             default:
               break

@@ -12,43 +12,30 @@
   .grey {
     filter: grayscale(1);
   }
-  .consume {
-    color: #1296db;
+  .pay {
+    color: #C13E3E;
   }
 </style>
 <template>
   <view class="page">
     <view class="type-group">
-      <image wx:for="{{typeRange}}"
-             wx:key="*this"
-             id="{{index}}"
-             class="{{index == typeSelected ? '': 'grey'}}"
-             src="./../images/{{item}}.svg"
-             catchtap="typeChange">
+      <image src="./../images/付款.svg">
       </image>
     </view>
     <view class="page__bd">
       <view class="weui-cells">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
-            <view class="weui-label">金额</view>
+            <view class="weui-label">金额/人</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume" value="{{total}}" type="digit" placeholder="请输入金额" id="total"
+            <input class="weui-input pay" value="{{fundAverage}}" type="digit" placeholder="请输入交款金额" id="fundAverage"
                    bindblur="bindBlur"/>
           </view>
         </view>
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
-            <view class="weui-label">描述</view>
-          </view>
-          <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="请输入描述" value="{{description}}" id="description" bindblur="bindBlur"/>
-          </view>
-        </view>
-        <view class="weui-cell weui-cell_input">
-          <view class="weui-cell__hd">
-            <view class="weui-label">支付人</view>
+            <view class="weui-label">收款人</view>
           </view>
           <view class="weui-cell__bd">
             <picker class="weui-cell__bd" value="{{userSelected}}" range="{{userRange}}" range-key="name"
@@ -68,6 +55,16 @@
           </view>
         </view>
       </view>
+
+      <view class="weui-cells">
+        <view class="weui-cell">
+          <view class="weui-cell__hd">
+            <view class="weui-label">合计</view>
+          </view>
+          <view class="weui-cell__bd pay">{{total}}</view>
+        </view>
+      </view>
+
       <view class="weui-cells">
         <checkbox-group @change="checkChange">
           <view class="weui-cell weui-cell_input" wx:for="{{checkItems}}" wx:key="value">
@@ -84,7 +81,7 @@
                     @change="weightChange({{index}})">
               <view class="weui-input page__desc">人数{{item.weight}}</view>
             </picker>
-            <view class="weui-cell page__title consume">{{item.total}}</view>
+            <view class="weui-cell page__title pay">{{item.total}}</view>
           </view>
         </checkbox-group>
       </view>
@@ -110,25 +107,17 @@
 
   Date.prototype.formatString = formatString;
 
-  export default class addConsume extends wepy.page {
+  export default class addFund extends wepy.page {
     config = {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: '添加消费',
-      navigationBarTextStyle: 'black'
-    }
+        backgroundTextStyle: 'light',
+        navigationBarBackgroundColor: '#fff',
+        navigationBarTitleText: '添加交款',
+        navigationBarTextStyle: 'black'
+      }
 
     computed = {
-      weightTotal() {
-        let weightTotal = 0
-        this.checkItems.forEach((item) => {
-          if (item.checked === true) {
-            weightTotal += item.weight
-          }
-        })
-        return weightTotal
-      },
       computeCheckItem() {
+        let total = 0
         this.checkItems.forEach((item, index) => {
           // 先计算此人是否被选中
           // index是number，数组里面是string,需要转换
@@ -138,26 +127,26 @@
             item.checked = false
           }
 
-          // 计算此人的分摊费用
+          // 计算此人的上交费用
           if (item.checked === true) {
-            item.total = Number((this.total / this.weightTotal * item.weight).toFixed(2))
+
+            item.total = Number((this.fundAverage * item.weight).toFixed(2))
+            total += item.total
           }
           else {
-            // 统一显示格式为2位小数
-            item.total = 0
+            item.total = Number(0).toFixed(2)
           }
         })
+        this.total= total
         this.$apply()
       }
     }
 
     data = {
-      typeRange: ['餐饮', '娱乐', '住宿', '出行'],
-      description:'餐饮',
-      typeSelected: 0,
-      total: '',
+      fundAverage: '',
       checkItems: [],
       checkedItemIndex: [],
+      total:0,
       weightRange: [],
       userRange:[],
       userSelected:0,
@@ -165,12 +154,6 @@
     }
 
     methods = {
-      typeChange(e) {
-        this.typeSelected = e.currentTarget.id
-        if(this.typeRange.indexOf(this.description.trim()) !== -1){
-          this.description = this.typeRange[e.currentTarget.id]
-        }
-      },
       weightChange(index, e) {
         this.checkItems[index].weight = this.weightRange[e.detail.value]
       },
@@ -184,13 +167,14 @@
         this.userSelected = e.detail.value
       },
       bindBlur: function (e) {
-        if (e.currentTarget.id === 'total') {
+        console.log(e)
+        if (e.currentTarget.id === 'fundAverage') {
           let value = Number(e.detail.value)
           if (Number.isNaN(value)) {
             value = 0
           }
-          if (this.total !== value) {
-            this.total = value
+          if (this.fundAverage !== value) {
+            this.fundAverage = value
             this.$apply()
           }
         } else {

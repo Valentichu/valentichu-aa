@@ -18,7 +18,8 @@
     config = {
       pages: [
         'pages/index',
-        'pages/addConsume'
+        'pages/addConsume',
+        'pages/addFund'
       ],
       window: {
         backgroundTextStyle: 'light',
