@@ -1,5 +1,6 @@
 <style lang="less">
   @import './style/weui.less';
+
   .container {
     height: 100%;
     display: flex;
@@ -19,7 +20,8 @@
       pages: [
         'pages/index',
         'pages/addConsume',
-        'pages/addFund'
+        'pages/addFund',
+        'pages/editName'
       ],
       window: {
         backgroundTextStyle: 'light',
@@ -58,7 +60,7 @@
               }
             }).catch((error) => {
               console.log('获取用户登录态失败！' + error)
-            });
+            })
           } else {
             console.log('获取用户登录态失败！' + res.errMsg)
           }

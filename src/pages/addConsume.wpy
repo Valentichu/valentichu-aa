@@ -3,15 +3,18 @@
     display: flex;
     justify-content: space-between;
   }
+
   .type-group image {
     flex: 1;
     width: 120rpx;
     height: 120rpx;
     margin-top: 50rpx;
   }
+
   .grey {
     filter: grayscale(1);
   }
+
   .consume {
     color: #1296db;
   }
@@ -34,7 +37,11 @@
             <view class="weui-label">金额</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume" value="{{total}}" type="digit" placeholder="请输入金额" id="total"
+            <input class="weui-input consume"
+                   value="{{total}}"
+                   ype="digit"
+                   placeholder="请输入金额"
+                   id="total"
                    bindblur="bindBlur"/>
           </view>
         </view>
@@ -43,7 +50,11 @@
             <view class="weui-label">描述</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="请输入描述" value="{{description}}" id="description" bindblur="bindBlur"/>
+            <input class="weui-input"
+                   placeholder="请输入描述"
+                   value="{{description}}"
+                   id="description"
+                   bindblur="bindBlur"/>
           </view>
         </view>
         <view class="weui-cell weui-cell_input">
@@ -51,7 +62,10 @@
             <view class="weui-label">支付人</view>
           </view>
           <view class="weui-cell__bd">
-            <picker class="weui-cell__bd" value="{{userSelected}}" range="{{userRange}}" range-key="name"
+            <picker class="weui-cell__bd"
+                    value="{{userSelected}}"
+                    range="{{userRange}}"
+                    range-key="name"
                     @change="userChange">
               <view class="weui-input">{{userRange[userSelected].name}}</view>
             </picker>
@@ -62,7 +76,10 @@
             <view class="weui-label">日期</view>
           </view>
           <view class="weui-cell__bd">
-            <picker mode="date" value="{{date}}" start="2017-09-01" end="2037-09-01" @change="dateChange">
+            <picker mode="date" value="{{date}}"
+                    start="2017-09-01"
+                    end="2037-09-01"
+                    @change="dateChange">
               <view class="weui-input">{{date}}</view>
             </picker>
           </view>
@@ -70,17 +87,28 @@
       </view>
       <view class="weui-cells">
         <checkbox-group @change="checkChange">
-          <view class="weui-cell weui-cell_input" wx:for="{{checkItems}}" wx:key="value">
+          <view class="weui-cell weui-cell_input"
+                wx:for="{{checkItems}}"
+                wx:key="value">
             <label class="weui-cell">
-              <checkbox class="weui-check" value="{{index}}" checked="{{item.checked}}"/>
+              <checkbox class="weui-check"
+                        value="{{index}}"
+                        checked="{{item.checked}}"/>
               <view class="weui-cell__hd weui-check__hd_in-checkbox">
-                <icon class="weui-icon-checkbox_circle" type="circle" size="23" wx:if="{{!item.checked}}"></icon>
-                <icon class="weui-icon-checkbox_success" type="success" size="23" wx:if="{{item.checked}}"></icon>
+                <icon class="weui-icon-checkbox_circle"
+                      type="circle" size="23"
+                      wx:if="{{!item.checked}}"></icon>
+                <icon class="weui-icon-checkbox_success"
+                      type="success"
+                      size="23"
+                      wx:if="{{item.checked}}"></icon>
               </view>
               <view class="weui-cell__bd page__title">{{item.name}}</view>
             </label>
             <!--将人数换算成weight数组的角标，如果人数为n对应weightRange数组的第[n-1]个，所以需要减1-->
-            <picker class="weui-cell__bd" value="{{item.weight - 1}}" range="{{weightRange}}"
+            <picker class="weui-cell__bd"
+                    value="{{item.weight - 1}}"
+                    range="{{weightRange}}"
                     @change="weightChange({{index}})">
               <view class="weui-input page__desc">人数{{item.weight}}</view>
             </picker>
@@ -92,12 +120,20 @@
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell">
           <view class="weui-cell__bd">
-            <textarea class="weui-textarea" placeholder="请输入备注" style="height: 3.3em" id="note" bindblur="bindBlur"/>
+            <textarea class="weui-textarea"
+                      placeholder="请输入备注"
+                      style="height: 3.3em"
+                      id="note"
+                      bindblur="bindBlur"/>
           </view>
         </view>
       </view>
       <view class="weui-btn-area">
-        <button class="weui-btn" type="primary" @tap="showTopTips">确定</button>
+        <button class="weui-btn"
+                type="primary"
+                @tap="showTopTips">
+          确定
+        </button>
       </view>
     </view>
   </view>
@@ -105,10 +141,9 @@
 
 <script>
   import wepy from 'wepy'
-  import currency from './../utils/currency'
   import formatString from './../utils/format'
 
-  Date.prototype.formatString = formatString;
+  Date.prototype.formatString = formatString
 
   export default class addConsume extends wepy.page {
     config = {
@@ -132,7 +167,7 @@
         this.checkItems.forEach((item, index) => {
           // 先计算此人是否被选中
           // index是number，数组里面是string,需要转换
-          if (this.checkedItemIndex.indexOf(index.toString()) != -1) {
+          if (this.checkedItemIndex.indexOf(index.toString()) !== -1) {
             item.checked = true
           } else {
             item.checked = false
@@ -141,8 +176,7 @@
           // 计算此人的分摊费用
           if (item.checked === true) {
             item.total = Number((this.total / this.weightTotal * item.weight).toFixed(2))
-          }
-          else {
+          } else {
             // 统一显示格式为2位小数
             item.total = 0
           }
@@ -153,21 +187,21 @@
 
     data = {
       typeRange: ['餐饮', '娱乐', '住宿', '出行'],
-      description:'餐饮',
+      description: '餐饮',
       typeSelected: 0,
       total: '',
       checkItems: [],
       checkedItemIndex: [],
       weightRange: [],
-      userRange:[],
-      userSelected:0,
+      userRange: [],
+      userSelected: 0,
       date: ''
     }
 
     methods = {
       typeChange(e) {
         this.typeSelected = e.currentTarget.id
-        if(this.typeRange.indexOf(this.description.trim()) !== -1){
+        if (this.typeRange.indexOf(this.description.trim()) !== -1) {
           this.description = this.typeRange[e.currentTarget.id]
         }
       },
@@ -203,15 +237,15 @@
       for (let i = 1; i < 99; i++) {
         this.weightRange.push(i)
       }
-      this.date = new Date().formatString("yyyy-MM-dd")
+      this.date = new Date().formatString('yyyy-MM-dd')
       this.checkItems = [
         {name: '陈昕然', id: 111, checked: true, weight: 2, total: 0},
-        {name: '宋玥沄', id: 2221, checked: true, weight: 1, total: 0},
+        {name: '宋玥沄', id: 2221, checked: true, weight: 1, total: 0}
       ]
       this.checkItems.forEach((item) => {
-        let user  = {}
+        let user = {}
         user.name = item.name
-        user.id  = item.id
+        user.id = item.id
         this.userRange.push(user)
       })
       this.userSelected = this.userRange.findIndex((item) => {

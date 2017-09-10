@@ -10,7 +10,7 @@
     align-items: center;
     height: 15%;
     width: 100%;
-    border-top: 1rpx solid #CCCCCC;
+    border-top: 1 rpx solid #CCCCCC;
   }
 
   .weui-tab {
@@ -122,7 +122,6 @@
   .consume {
     color: #1296db;
   }
-
 </style>
 <template>
   <view class="page">
@@ -161,82 +160,86 @@
     <view class="page-top {{sideLeft ? 'transform-left' : ''}} {{sideRight ? 'transform-right' : ''}}"
           catchtap="sidebarClose">
       <view class="header">
-          <image class="sidebar-button" src="./../images/菜单.svg" catchtap="sideLeftToggle"></image>
-          <span class="name">蒲江一日游</span>
-          <image class="option-button" src="./../images/设置.svg" catchtap="sideRightToggle"></image>
-        </view>
+        <image class="sidebar-button" src="./../images/菜单.svg" catchtap="sideLeftToggle"></image>
+        <span class="name">蒲江一日游</span>
+        <image class="option-button" src="./../images/设置.svg" catchtap="sideRightToggle"></image>
+      </view>
       <view class="weui-tab">
-          <view class="weui-navbar">
-            <view wx:for="{{tabs}}" wx:key="*this" id="{{index}}"
-                  class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" catchtap="tabClick">
-              <view class="weui-navbar__title">{{item}}</view>
-            </view>
-            <view class="weui-navbar__slider"
-                  style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
+        <view class="weui-navbar">
+          <view wx:for="{{tabs}}"
+                wx:key="*this"
+                id="{{index}}"
+                class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}"
+                catchtap="tabClick">
+            <view class="weui-navbar__title">{{item}}</view>
           </view>
-          <view class="weui-tab__panel">
-            <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
+          <view class="weui-navbar__slider"
+                style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);">
+          </view>
+        </view>
+        <view class="weui-tab__panel">
+          <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
 
-              <view class="card weui-flex">
-                <image class="card-type" src="./../images/付款.svg" alt=""></image>
-                <view class="weui-flex__item">
-                  <view class="weui-flex">
-                    <view class="weui-flex__item page__title">收款</view>
-                    <view class="weui-flex__item page__desc">2017-09-08</view>
-                  </view>
-                  <view class="weui-flex">
-                    <view class="weui-flex__item page__desc">陈昕然</view>
-                    <view class="weui-flex__item page__title">10000.00</view>
-                  </view>
+            <view class="card weui-flex">
+              <image class="card-type" src="./../images/付款.svg" alt=""></image>
+              <view class="weui-flex__item">
+                <view class="weui-flex">
+                  <view class="weui-flex__item page__title">收款</view>
+                  <view class="weui-flex__item page__desc">2017-09-08</view>
+                </view>
+                <view class="weui-flex">
+                  <view class="weui-flex__item page__desc">陈昕然</view>
+                  <view class="weui-flex__item page__title">10000.00</view>
                 </view>
               </view>
+            </view>
 
-              <view class="card weui-flex">
-                <image class="card-type" src="./../images/餐饮.svg" alt=""></image>
-                <view class="weui-flex__item">
-                  <view class="weui-flex">
-                    <view class="weui-flex__item page__title">肥肠鸡</view>
-                    <view class="weui-flex__item page__desc">2017-09-08</view>
-                  </view>
-                  <view class="weui-flex">
-                    <view class="weui-flex__item page__desc">陈昕然</view>
-                    <view class="weui-flex__item page__title">5000.00</view>
-                  </view>
+            <view class="card weui-flex">
+              <image class="card-type" src="./../images/餐饮.svg" alt=""></image>
+              <view class="weui-flex__item">
+                <view class="weui-flex">
+                  <view class="weui-flex__item page__title">肥肠鸡</view>
+                  <view class="weui-flex__item page__desc">2017-09-08</view>
+                </view>
+                <view class="weui-flex">
+                  <view class="weui-flex__item page__desc">陈昕然</view>
+                  <view class="weui-flex__item page__title">5000.00</view>
                 </view>
               </view>
+            </view>
 
-            </scroll-view>
-            <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
-              <view class="weui-panel weui-panel_access">
-                <view class="weui-panel__bd">
-                  <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-                    <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                      <image class="weui-media-box__thumb" src="./../images/用户.svg" />
-                    </view>
-                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                      <view class="weui-media-box__title page__title">陈昕然</view>
-                    </view>
-                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                      <view class="weui-media-box__desc">应补</view>
-                      <view class="weui-media-box__title pay page__title">2500.00</view>
-                    </view>
-                  </navigator>
+          </scroll-view>
+          <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
+            <view class="weui-panel weui-panel_access">
+              <view class="weui-panel__bd">
+                <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__title page__title">陈昕然</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">应补</view>
+                    <view class="weui-media-box__title pay page__title">2500.00</view>
+                  </view>
+                </navigator>
 
-                  <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-                    <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                      <image class="weui-media-box__thumb" src="./../images/用户.svg" />
-                    </view>
-                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                      <view class="weui-media-box__title page__title">宋玥沄</view>
-                    </view>
-                    <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                      <view class="weui-media-box__desc">应退</view>
-                      <view class="weui-media-box__title refund page__title">2500.00</view>
-                    </view>
-                  </navigator>
-                </view>
+                <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__title page__title">宋玥沄</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">应退</view>
+                    <view class="weui-media-box__title refund page__title">2500.00</view>
+                  </view>
+                </navigator>
               </view>
-            </scroll-view>
+            </view>
+          </scroll-view>
         </view>
       </view>
       <view class="footer">
@@ -254,19 +257,17 @@
           </view>
         </view>
       </view>
-  </view>
+    </view>
 
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
-  import currency from './../utils/currency'
 
   const sliderWidth = 96 // 需要设置slider的宽度，用于计算中间位置
 
   export default class Index extends wepy.page {
-
     data = {
       tabs: ['明细', '结算'],
       activeIndex: 0,
@@ -278,8 +279,8 @@
 
     methods = {
       tabClick(e) {
-        this.sliderOffset = e.currentTarget.offsetLeft;
-        this.activeIndex = e.currentTarget.id;
+        this.sliderOffset = e.currentTarget.offsetLeft
+        this.activeIndex = e.currentTarget.id
       },
       sideLeftToggle() {
         if (this.sideLeft) {
@@ -306,7 +307,7 @@
           itemList: ['消费', '交款']
         }).then((res) => {
           console.log(res.tapIndex)
-          switch (res.tapIndex){
+          switch (res.tapIndex) {
             case 0:
               wepy.navigateTo({
                 url: 'addConsume'
@@ -321,17 +322,17 @@
               break
           }
         }).catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
       }
     }
 
     async onLoad() {
-      let res = await wepy.getSystemInfo();
+      let res = await wepy.getSystemInfo()
 
-      this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2;
-      this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex;
-      this.$apply();
+      this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2
+      this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex
+      this.$apply()
     }
   }
 </script>

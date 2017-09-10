@@ -1,0 +1,68 @@
+<style lang="less">
+  .type-group {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .type-group image {
+    flex: 1;
+    width: 120rpx;
+    height: 120rpx;
+    margin-top: 50rpx;
+  }
+</style>
+
+<template>
+  <view class="page">
+    <view class="type-group">
+      <image src="./../images/编辑.svg">
+      </image>
+    </view>
+    <view class="page__bd">
+      <view class="weui-cells">
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">名称</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input"
+                   value="{{name}}"
+                   placeholder="请输入名称"
+                   id="name"
+                   bindblur="bindBlur"/>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import formatString from './../utils/format'
+
+  Date.prototype.formatString = formatString
+
+  export default class edItName extends wepy.page {
+    config = {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: '编辑名称',
+      navigationBarTextStyle: 'black'
+    }
+
+    data = {
+      name: ''
+    }
+
+    methods = {
+      bindBlur: function (e) {
+        this[e.currentTarget.id] = e.detail.value
+      }
+    }
+
+    onLoad() {
+      this.name = '陈昕然'
+    }
+  }
+</script>
