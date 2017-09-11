@@ -1,0 +1,122 @@
+<style lang="less">
+  .type-group {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .type-group image {
+    flex: 1;
+    width: 120rpx;
+    height: 120rpx;
+    margin: 50rpx auto;
+  }
+
+  .pay {
+    color: #C13E3E;
+  }
+
+  .consume {
+    color: #1296db;
+  }
+</style>
+
+<template>
+  <view class="page">
+    <view class="type-group">
+      <image src="./../images/结算.svg">
+      </image>
+    </view>
+    <view class="page__bd">
+
+      <view class="container">
+        <span class="page__title pay">应补:7500</span>
+        <span class="page__desc">陈昕然</span>
+      </view>
+
+      <view>
+        <view class="weui-cells__title">交款</view>
+        <view class="weui-panel weui-panel_access">
+          <view class="weui-panel__bd">
+            <navigator url="addFund" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+              <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">2017-09-09</view>
+                <view class="weui-media-box__title page__title">交款</view>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">交款</view>
+                <view class="weui-media-box__title consume page__title">2500</view>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">收款</view>
+                <view class="weui-media-box__title pay page__title">5000</view>
+              </view>
+              <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+            </navigator>
+          </view>
+        </view>
+      </view>
+
+
+      <view>
+        <view class="weui-cells__title">消费</view>
+        <view class="weui-panel weui-panel_access">
+          <view class="weui-panel__bd">
+            <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+              <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">2017-09-09</view>
+                <view class="weui-media-box__title page__title">肥肠鸡</view>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">付款</view>
+                <view class="weui-media-box__title consume page__title">5000</view>
+              </view>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__desc">分摊</view>
+                <view class="weui-media-box__title pay page__title">2500</view>
+              </view>
+              <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+            </navigator>
+
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import formatString from './../utils/format'
+
+  Date.prototype.formatString = formatString
+
+  export default class settleDetail extends wepy.page {
+    config = {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: '结算明细',
+      navigationBarTextStyle: 'black'
+    }
+
+    data = {
+      name: ''
+    }
+
+    methods = {
+      bindBlur: function (e) {
+        this[e.currentTarget.id] = e.detail.value
+      }
+    }
+
+    onLoad() {
+      this.name = '陈昕然'
+    }
+  }
+</script>

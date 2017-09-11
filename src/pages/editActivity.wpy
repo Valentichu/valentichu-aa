@@ -18,115 +18,56 @@
   .consume {
     color: #1296db;
   }
+
+  .label {
+    width: 100rpx;
+  }
 </style>
 <template>
   <view class="page">
     <view class="type-group">
-      <image wx:for="{{typeRange}}"
-             wx:key="*this"
-             id="{{index}}"
-             class="{{index == typeSelected ? '': 'grey'}}"
-             src="./../images/{{item}}.svg"
-             catchtap="typeChange">
+      <image src="./../images/编辑.svg">
       </image>
     </view>
     <view class="page__bd">
       <view class="weui-cells">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
-            <view class="weui-label">金额</view>
+            <view class="weui-label">活动名称</view>
           </view>
           <view class="weui-cell__bd">
             <input class="weui-input consume"
                    value="{{total}}"
                    ype="digit"
-                   placeholder="请输入金额"
-                   id="total"
+                   placeholder="请输入活动名称"
+                   id="name"
                    bindblur="bindBlur"/>
           </view>
         </view>
-        <view class="weui-cell weui-cell_input">
-          <view class="weui-cell__hd">
-            <view class="weui-label">描述</view>
-          </view>
-          <view class="weui-cell__bd">
-            <input class="weui-input"
-                   placeholder="请输入描述"
-                   value="{{description}}"
-                   id="description"
-                   bindblur="bindBlur"/>
-          </view>
-        </view>
-        <view class="weui-cell weui-cell_input">
-          <view class="weui-cell__hd">
-            <view class="weui-label">支付人</view>
-          </view>
-          <view class="weui-cell__bd">
-            <picker class="weui-cell__bd"
-                    value="{{userSelected}}"
-                    range="{{userRange}}"
-                    range-key="name"
-                    @change="userChange">
-              <view class="weui-input">{{userRange[userSelected].name}}</view>
-            </picker>
-          </view>
-        </view>
-        <view class="weui-cell weui-cell_input">
-          <view class="weui-cell__hd">
-            <view class="weui-label">日期</view>
-          </view>
-          <view class="weui-cell__bd">
-            <picker mode="date" value="{{date}}"
-                    start="2017-09-01"
-                    end="2037-09-01"
-                    @change="dateChange">
-              <view class="weui-input">{{date}}</view>
-            </picker>
-          </view>
-        </view>
+
       </view>
       <view class="weui-cells__title">参与人员</view>
       <view class="weui-cells weui-cells_after-title">
-        <checkbox-group @change="checkChange">
-          <view class="weui-cell weui-cell_input"
-                wx:for="{{checkItems}}"
-                wx:key="value">
-            <label class="weui-cell">
-              <checkbox class="weui-check"
-                        value="{{index}}"
-                        checked="{{item.checked}}"/>
-              <view class="weui-cell__hd weui-check__hd_in-checkbox">
-                <icon class="weui-icon-checkbox_circle"
-                      type="circle" size="23"
-                      wx:if="{{!item.checked}}"></icon>
-                <icon class="weui-icon-checkbox_success"
-                      type="success"
-                      size="23"
-                      wx:if="{{item.checked}}"></icon>
-              </view>
-              <view class="weui-cell__bd page__title">{{item.name}}</view>
-            </label>
-            <!--将人数换算成weight数组的角标，如果人数为n对应weightRange数组的第[n-1]个，所以需要减1-->
-            <picker class="weui-cell__bd"
-                    value="{{item.weight - 1}}"
-                    range="{{weightRange}}"
-                    @change="weightChange({{index}})">
-              <view class="weui-input page__desc">人数{{item.weight}}</view>
-            </picker>
-            <view class="weui-cell page__title consume">{{item.total}}</view>
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label label">姓名</view>
           </view>
-        </checkbox-group>
-      </view>
-      <view class="weui-cells__title">备注</view>
-      <view class="weui-cells weui-cells_after-title">
-        <view class="weui-cell">
           <view class="weui-cell__bd">
-            <textarea class="weui-textarea"
-                      placeholder="请输入备注"
-                      style="height: 3.3em"
-                      id="note"
-                      bindblur="bindBlur"/>
+            <view class="weui-label label">陈昕然</view>
           </view>
+          <view class="weui-cell__hd">
+            <view class="weui-label label">人数</view>
+          </view>
+          <view class="weui-cell__bd">
+            <picker class="weui-cell__bd"
+                    range="{{weightRange}}"
+                    @change="userChange">
+              <view class="weui-input">1</view>
+            </picker>
+          </view>
+        </view>
+        <view class="weui-cell weui-cell_link">
+          <view class="weui-cell__bd">添加更多</view>
         </view>
       </view>
       <view class="weui-btn-area">
@@ -134,6 +75,11 @@
                 type="primary"
                 @tap="showTopTips">
           确定
+        </button>
+        <button class="weui-btn"
+                type="warn"
+                @tap="deleteActivity">
+          删除
         </button>
       </view>
     </view>
@@ -146,11 +92,11 @@
 
   Date.prototype.formatString = formatString
 
-  export default class addConsume extends wepy.page {
+  export default class editActivity extends wepy.page {
     config = {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: '消费明细',
+      navigationBarTitleText: '编辑活动',
       navigationBarTextStyle: 'black'
     }
 
@@ -200,23 +146,8 @@
     }
 
     methods = {
-      typeChange(e) {
-        this.typeSelected = e.currentTarget.id
-        if (this.typeRange.indexOf(this.description.trim()) !== -1) {
-          this.description = this.typeRange[e.currentTarget.id]
-        }
-      },
       weightChange(index, e) {
         this.checkItems[index].weight = this.weightRange[e.detail.value]
-      },
-      dateChange(e) {
-        this.date = e.detail.value
-      },
-      checkChange(e) {
-        this.checkedItemIndex = e.detail.value
-      },
-      userChange(e) {
-        this.userSelected = e.detail.value
       },
       bindBlur: function (e) {
         if (e.currentTarget.id === 'total') {
@@ -231,6 +162,18 @@
         } else {
           this[e.currentTarget.id] = e.detail.value
         }
+      },
+      deleteActivity() {
+        wepy.showModal({
+          title: '确认删除',
+          content: '是否确认删除？',
+          confirmText:'删除',
+          confirmColor:'#d81e06'
+        }).then((res) => {
+
+        }).catch((res) => {
+
+        })
       }
     }
 

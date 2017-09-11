@@ -3,6 +3,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    image,
+    span.placeholder
+    {
+      width: 50rpx;
+      height: 50rpx;
+      margin: 20rpx 0 0 60rpx;
+    }
   }
 
   .footer {
@@ -10,7 +17,14 @@
     align-items: center;
     height: 15%;
     width: 100%;
-    border-top: 1 rpx solid #CCCCCC;
+    border-top: 1rpx solid #CCCCCC;
+    image
+    {
+      height: 100rpx;
+      width: 100rpx;
+      margin-left: 40rpx;
+      margin-right: 20rpx;
+    }
   }
 
   .weui-tab {
@@ -18,47 +32,28 @@
   }
 
   .display {
-    height: 100%;
-    transition: ease .5s;
   }
 
   .hidden {
-    height: 0;
-    transition: ease .5s;
+    display: none;
   }
 
-  .side-left {
+  .sidebar {
     width: 50%;
-    float: left;
-  }
-
-  side-right {
-    width: 50%;
-    float: right;
-  }
-
-  .sidebar-button {
-    width: 50rpx;
-    height: 50rpx;
-    margin: 20rpx 0 0 60rpx;
-  }
-
-  .option-button {
-    width: 50rpx;
-    height: 50rpx;
-    margin: 20rpx 60rpx 0 0;
+    image
+    {
+      width: 50rpx;
+      height: 50rpx;
+      margin: 20rpx 0 0 60rpx;
+    }
   }
 
   .page-bottom {
     height: 100%;
-    width: 750rpx;
+    width: 100%;
     z-index: -1;
     position: fixed;
     background: white;
-  }
-
-  .page-side {
-    padding-top: 300rpx;
   }
 
   .page-top {
@@ -76,11 +71,6 @@
     -webkit-transform: rotate(0deg) scale(1) translate(50%, 0%);
   }
 
-  .transform-right {
-    transform: rotate(0deg) scale(1) translate(-50%, 0%);
-    -webkit-transform: rotate(0deg) scale(1) translate(-50%, 0%);
-  }
-
   .icon {
     margin-right: 5px;
     vertical-align: middle;
@@ -88,27 +78,15 @@
     height: 20px;
   }
 
-  .card {
-    background: white;
-    height: 200rpx;
-    margin: 20rpx;
-    border-radius: 20px;
-    align-items: center;
-    display: flex;
+  .canvas-wrapper {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width: 100%;
   }
 
-  .card-type {
-    height: 160rpx;
-    width: 160rpx;
-    margin-left: 20rpx;
-    margin-right: 20rpx;
-  }
-
-  .add-button {
-    height: 100rpx;
-    width: 100rpx;
-    margin-left: 40rpx;
-    margin-right: 20rpx;
+  .delete {
+    color: #d81e06;
   }
 
   .refund {
@@ -126,30 +104,21 @@
 <template>
   <view class="page">
     <view class="page-bottom">
-      <view class="weui-cells weui-cells_after-title side-left">
-        <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+      <view class="weui-cells weui-cells_after-title sidebar">
+        <navigator url="addActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
           <view class="weui-cell__bd">新增活动</view>
           <view class="weui-cell__hd">
             <image src="./../images/新增.svg" class="icon"></image>
           </view>
         </navigator>
-        <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+        <navigator url="viewActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
           <view class="weui-cell__bd">查看活动</view>
           <view class="weui-cell__hd">
             <image src="./../images/查看.svg" class="icon"></image>
           </view>
         </navigator>
-      </view>
-
-      <view class="weui-cells weui-cells_after-title side-left">
-        <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-          <view class="weui-cell__bd">编辑名称</view>
-          <view class="weui-cell__hd">
-            <image src="./../images/编辑.svg" class="icon"></image>
-          </view>
-        </navigator>
-        <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-          <view class="weui-cell__bd">编辑成员</view>
+        <navigator url="editActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">编辑活动</view>
           <view class="weui-cell__hd">
             <image src="./../images/编辑.svg" class="icon"></image>
           </view>
@@ -157,12 +126,12 @@
       </view>
     </view>
 
-    <view class="page-top {{sideLeft ? 'transform-left' : ''}} {{sideRight ? 'transform-right' : ''}}"
+    <view class="page-top {{sidebar ? 'transform-left' : ''}}"
           catchtap="sidebarClose">
       <view class="header">
-        <image class="sidebar-button" src="./../images/菜单.svg" catchtap="sideLeftToggle"></image>
-        <span class="name">蒲江一日游</span>
-        <image class="option-button" src="./../images/设置.svg" catchtap="sideRightToggle"></image>
+        <image src="./../images/菜单.svg" catchtap="sidebarToggle"></image>
+        <span>蒲江一日游</span>
+        <span class="placeholder"></span>
       </view>
       <view class="weui-tab">
         <view class="weui-navbar">
@@ -179,40 +148,43 @@
         </view>
         <view class="weui-tab__panel">
           <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
-
-            <view class="card weui-flex">
-              <image class="card-type" src="./../images/付款.svg" alt=""></image>
-              <view class="weui-flex__item">
-                <view class="weui-flex">
-                  <view class="weui-flex__item page__title">收款</view>
-                  <view class="weui-flex__item page__desc">2017-09-08</view>
-                </view>
-                <view class="weui-flex">
-                  <view class="weui-flex__item page__desc">陈昕然</view>
-                  <view class="weui-flex__item page__title">10000.00</view>
-                </view>
+            <view class="weui-panel weui-panel_access">
+              <view class="weui-panel__bd">
+                <navigator url="addFund" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">陈昕然</view>
+                    <view class="weui-media-box__title page__title">收款</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">2017-09-08</view>
+                    <view class="weui-media-box__title pay page__title">2500.00</view>
+                  </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+                </navigator>
+                <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">陈昕然</view>
+                    <view class="weui-media-box__title page__title">肥肠鸡</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">2017-09-08</view>
+                    <view class="weui-media-box__title consume page__title">2500.00</view>
+                  </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+                </navigator>
               </view>
             </view>
-
-            <view class="card weui-flex">
-              <image class="card-type" src="./../images/餐饮.svg" alt=""></image>
-              <view class="weui-flex__item">
-                <view class="weui-flex">
-                  <view class="weui-flex__item page__title">肥肠鸡</view>
-                  <view class="weui-flex__item page__desc">2017-09-08</view>
-                </view>
-                <view class="weui-flex">
-                  <view class="weui-flex__item page__desc">陈昕然</view>
-                  <view class="weui-flex__item page__title">5000.00</view>
-                </view>
-              </view>
-            </view>
-
           </scroll-view>
           <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
             <view class="weui-panel weui-panel_access">
               <view class="weui-panel__bd">
-                <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                <navigator url="settleDetail" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
                   <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
                     <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
                   </view>
@@ -223,9 +195,10 @@
                     <view class="weui-media-box__desc">应补</view>
                     <view class="weui-media-box__title pay page__title">2500.00</view>
                   </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
                 </navigator>
 
-                <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                <navigator url="settleDetail" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
                   <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
                     <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
                   </view>
@@ -236,15 +209,22 @@
                     <view class="weui-media-box__desc">应退</view>
                     <view class="weui-media-box__title refund page__title">2500.00</view>
                   </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
                 </navigator>
               </view>
             </view>
           </scroll-view>
+          <view class="weui-tab__content {{activeIndex == 2 ? 'display' :'hidden'}}">
+            <view class="page__desc container">消费分布</view>
+            <view class="canvas-wrapper">
+              <canvas canvas-id="pieCanvas" style="width: 360px;height: 300px"></canvas>
+            </view>
+          </view>
         </view>
       </view>
       <view class="footer">
         <view class="weui-flex__item">
-          <image class="add-button" src="./../images/添加.svg" alt="" catchtap="showActionSheet"></image>
+          <image src="./../images/添加.svg" alt="" catchtap="showActionSheet"></image>
         </view>
         <view class="weui-flex__item">
           <view class="weui-flex">
@@ -264,17 +244,17 @@
 
 <script>
   import wepy from 'wepy'
+  import wxCharts from './../utils/wxcharts'
 
   const sliderWidth = 96 // 需要设置slider的宽度，用于计算中间位置
 
   export default class Index extends wepy.page {
     data = {
-      tabs: ['明细', '结算'],
+      tabs: ['明细', '结算', '统计'],
       activeIndex: 0,
       sliderOffset: 0,
       sliderLeft: 0,
-      sideLeft: false,
-      sideRight: false
+      sidebar: false,
     };
 
     methods = {
@@ -282,24 +262,16 @@
         this.sliderOffset = e.currentTarget.offsetLeft
         this.activeIndex = e.currentTarget.id
       },
-      sideLeftToggle() {
-        if (this.sideLeft) {
-          this.sideLeft = false
+      sidebarToggle() {
+        if (this.sidebar) {
+          this.sidebar = false
         } else {
-          this.sideLeft = true
-        }
-      },
-      sideRightToggle() {
-        if (this.sideRight) {
-          this.sideRight = false
-        } else {
-          this.sideRight = true
+          this.sidebar = true
         }
       },
       sidebarClose() {
-        if (this.sideLeft || this.sideRight) {
-          this.sideLeft = false
-          this.sideRight = false
+        if (this.sidebar) {
+          this.sidebar = false
         }
       },
       showActionSheet() {
@@ -333,6 +305,27 @@
       this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2
       this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex
       this.$apply()
+
+     new wxCharts({
+        canvasId: 'pieCanvas',
+        type: 'pie',
+        series: [{
+          name: '餐饮',
+          data: 50,
+        }, {
+          name: '娱乐',
+          data: 30,
+        }, {
+          name: '出行',
+          data: 10,
+        }, {
+          name: '住宿',
+          data: 10,
+        }],
+        width: 360,
+        height: 300,
+        dataLabel: true
+      })
     }
   }
 </script>

@@ -77,8 +77,8 @@
           <view class="weui-cell__bd pay">{{total}}</view>
         </view>
       </view>
-
-      <view class="weui-cells">
+      <view class="weui-cells__title">参与人员</view>
+      <view class="weui-cells weui-cells_after-title">
         <checkbox-group @change="checkChange">
           <view class="weui-cell weui-cell_input"
                 wx:for="{{checkItems}}"
@@ -144,7 +144,7 @@
     config = {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: '添加交款',
+      navigationBarTitleText: '交款明细',
       navigationBarTextStyle: 'black'
     }
 
