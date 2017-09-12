@@ -45,6 +45,22 @@
     }
 
     onLaunch() {
+     this.login()
+    }
+
+    getUserInfo(callback) {
+      if (this.globalData.userInfo) {
+        callback && callback(this.globalData.userInfo)
+      }
+      wepy.getUserInfo({
+        success: (res) => {
+          this.globalData.userInfo = res.userInfo
+          callback && callback(res.userInfo)
+        }
+      })
+    }
+
+    login() {
       wepy.login()
         .then((res) => {
           if (res.code) {
@@ -57,29 +73,22 @@
               let result = res.data
               if (result.code === 200) {
                 this.globalData.token = result.data
+                return result.data
               } else {
                 console.log('获取用户登录态失败！' + res.errMsg)
+                return null
               }
             }).catch((error) => {
               console.log('获取用户登录态失败！' + error)
+              return null
             })
           } else {
             console.log('获取用户登录态失败！' + res.errMsg)
+            return null
           }
         }).catch((error) => {
         console.log('获取用户登录态失败！' + error)
-      })
-    }
-
-    getUserInfo(callback) {
-      if (this.globalData.userInfo) {
-        callback && callback(this.globalData.userInfo)
-      }
-      wepy.getUserInfo({
-        success: (res) => {
-          this.globalData.userInfo = res.userInfo
-          callback && callback(res.userInfo)
-        }
+        return null
       })
     }
   }

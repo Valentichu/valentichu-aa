@@ -22,6 +22,10 @@
   .label {
     width: 100rpx;
   }
+
+  .placeholder {
+    width: 23px;
+  }
 </style>
 <template>
   <view class="page">
@@ -36,11 +40,10 @@
             <view class="weui-label">活动名称</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume"
-                   value="{{total}}"
-                   ype="digit"
+            <input class="weui-input"
+                   value="{{activityName}}"
                    placeholder="请输入活动名称"
-                   id="name"
+                   id="activityName"
                    bindblur="bindBlur"/>
           </view>
         </view>
@@ -49,11 +52,10 @@
             <view class="weui-label">创建人</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input consume"
-                   value="{{total}}"
-                   ype="digit"
+            <input class="weui-input"
+                   value="{{createdUser.userName}}"
                    placeholder="请输入创建人"
-                   id="user"
+                   id="createdUser"
                    bindblur="bindBlur"/>
           </view>
         </view>
@@ -62,11 +64,11 @@
             <view class="weui-label">日期</view>
           </view>
           <view class="weui-cell__bd">
-            <picker mode="date" value="{{date}}"
+            <picker mode="date" value="{{createdDate}}"
                     start="2017-09-01"
                     end="2037-09-01"
                     @change="dateChange">
-              <view class="weui-input">{{date}}</view>
+              <view class="weui-input">{{createdDate}}</view>
             </picker>
           </view>
         </view>
@@ -78,11 +80,7 @@
             <view class="weui-label label">姓名</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input"
-                   value="{{total}}"
-                   ype="digit"
-                   placeholder="请输入姓名"
-                   bindblur="bindBlur"/>
+            <view class="weui-label label">{{createdUser.userName}}</view>
           </view>
           <view class="weui-cell__hd">
             <view class="weui-label label">人数</view>
@@ -90,22 +88,51 @@
           <view class="weui-cell__bd">
             <picker class="weui-cell__bd"
                     range="{{weightRange}}"
-                    @change="userChange">
-              <view class="weui-input">1</view>
+                    @change="createdUserWeightChange">
+              <view class="weui-input">{{createdUser.userWeight}}</view>
             </picker>
           </view>
+          <view class="cell__bd placeholder">
+          </view>
+        </view>
+
+        <view class="weui-cell weui-cell_input"
+              wx:for="{{userList}}"
+              wx:key="{{index}}">
           <view class="weui-cell__hd">
-            <icon type="clear" size="23"></icon>
+            <view class="weui-label label">姓名</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input"
+                   placeholder="请输入姓名"
+                   id="description"
+                   value="{{item.userName}}"
+                   bindblur="bindBlurUserList({{index}})"/>
+          </view>
+          <view class="weui-cell__hd">
+            <view class="weui-label label">人数</view>
+          </view>
+          <view class="weui-cell__bd">
+            <picker class="weui-cell__bd"
+                    value="{{item.userWeight - 1}}"
+                    range="{{weightRange}}"
+                    @change="userListWeightChange({{index}})">
+              <view class="weui-input">{{item.userWeight}}</view>
+            </picker>
+          </view>
+          <view class="cell__bd">
+            <icon type="clear" size="23" @tap="deleteUser({{index}})"></icon>
           </view>
         </view>
         <view class="weui-cell weui-cell_link">
-          <view class="weui-cell__bd">添加更多</view>
+          <view class="weui-cell__bd" @tap="addUser">添加更多</view>
         </view>
       </view>
       <view class="weui-btn-area">
         <button class="weui-btn"
                 type="primary"
-                @tap="showTopTips">
+                @tap="addActivity"
+                loading="{{loading}}">
           确定
         </button>
       </view>
@@ -127,83 +154,101 @@
       navigationBarTextStyle: 'black'
     }
 
-    computed = {
-      weightTotal() {
-        let weightTotal = 0
-        this.checkItems.forEach((item) => {
-          if (item.checked === true) {
-            weightTotal += item.weight
-          }
-        })
-        return weightTotal
-      },
-      computeCheckItem() {
-        this.checkItems.forEach((item, index) => {
-          // 先计算此人是否被选中
-          // index是number，数组里面是string,需要转换
-          if (this.checkedItemIndex.indexOf(index.toString()) !== -1) {
-            item.checked = true
-          } else {
-            item.checked = false
-          }
-
-          // 计算此人的分摊费用
-          if (item.checked === true) {
-            item.total = Number((this.total / this.weightTotal * item.weight).toFixed(2))
-          } else {
-            // 统一显示格式为2位小数
-            item.total = 0
-          }
-        })
-        this.$apply()
-      }
-    }
-
     data = {
-      typeRange: ['餐饮', '娱乐', '住宿', '出行'],
-      description: '餐饮',
-      typeSelected: 0,
-      total: '',
-      checkItems: [],
-      checkedItemIndex: [],
+      loading:false,
+      currentNum: 1,
       weightRange: [],
-      userRange: [],
-      userSelected: 0,
-      date: ''
+      activityName: '',
+      createdDate: '',
+      createdUser: {
+        userName:'',
+        userWeight:1,
+        bindOpenId:true
+      },
+      userList: []
     }
 
     methods = {
-      typeChange(e) {
-        this.typeSelected = e.currentTarget.id
-        if (this.typeRange.indexOf(this.description.trim()) !== -1) {
-          this.description = this.typeRange[e.currentTarget.id]
-        }
-      },
-      weightChange(index, e) {
-        this.checkItems[index].weight = this.weightRange[e.detail.value]
+      createdUserWeightChange(e) {
+        this.createdUser.userWeight = this.weightRange[e.detail.value]
       },
       dateChange(e) {
-        this.date = e.detail.value
-      },
-      checkChange(e) {
-        this.checkedItemIndex = e.detail.value
-      },
-      userChange(e) {
-        this.userSelected = e.detail.value
+        this.createdDate = e.detail.value
       },
       bindBlur: function (e) {
-        if (e.currentTarget.id === 'total') {
-          let value = Number(e.detail.value)
-          if (Number.isNaN(value)) {
-            value = 0
-          }
-          if (this.total !== value) {
-            this.total = value
-            this.$apply()
-          }
+        if (e.currentTarget.id === 'createdUser') {
+          this.createdUser.userName = e.detail.value
         } else {
           this[e.currentTarget.id] = e.detail.value
         }
+      },
+      bindBlurUserList: function (index, e) {
+       this.userList[index].userName = e.detail.value
+      },
+      userListWeightChange: function (index, e) {
+        this.userList[index].userWeight = this.weightRange[e.detail.value]
+      },
+      addUser: function(){
+        this.userList.push({
+          userName: '成员' + this.currentNum,
+          userWeight:1,
+          bindOpenId:false
+        })
+        this.currentNum ++
+      },
+      deleteUser: function (index) {
+        this.userList.splice(index,1)
+      },
+      addActivity: function () {
+        this.loading  = true
+        if(!this.validate()) {
+          wepy.showToast({
+            title: '请填写完整',
+            image:'./../images/删除.svg',
+            duration: 2000
+          })
+          this.loading  = false
+          return
+        }
+
+        if(this.$parent.globalData.token === null){
+          let token = this.$parent.login()
+          if(token === undefined) {
+            wepy.showToast({
+              title: '请检查网络',
+              image:'./../images/删除.svg',
+              duration: 2000
+            })
+            this.loading  = false
+            return
+          }
+        }
+
+        let userDetailList = []
+        userDetailList.push(this.createdUser)
+        userDetailList = userDetailList.concat(this.userList)
+        console.log(userDetailList)
+        wepy.request({
+          url: 'http://localhost:8088/activity/',
+          data: {
+            activityName: this.activityName,
+            createdDate:this.createdDate,
+            userDetailList:userDetailList
+          },
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'POST'
+        }).then((res) => {
+          let result = res.data
+          if (result.code === 200) {
+           console.log(result)
+          } else {
+            console.log('获取失败！' + res.errMsg)
+          }
+        }).catch((error) => {
+          console.log('获取失败！' + error)
+        })
       }
     }
 
@@ -211,25 +256,21 @@
       for (let i = 1; i < 99; i++) {
         this.weightRange.push(i)
       }
-      this.date = new Date().formatString('yyyy-MM-dd')
-      this.checkItems = [
-        {name: '陈昕然', id: 111, checked: true, weight: 2, total: 0},
-        {name: '宋玥沄', id: 2221, checked: true, weight: 1, total: 0}
-      ]
-      this.checkItems.forEach((item) => {
-        let user = {}
-        user.name = item.name
-        user.id = item.id
-        this.userRange.push(user)
+      this.createdDate = new Date().formatString('yyyy-MM-dd')
+    }
+
+    validate() {
+      if(this.createdUser.userName.trim() === '' || this.activityName.trim() ==='') {
+        return false
+      }
+
+      this.userList.forEach((item) => {
+        if(item.userName.trim() === '') {
+          return false
+        }
       })
-      this.userSelected = this.userRange.findIndex((item) => {
-        return item.id === 2221
-      })
-      this.checkedItemIndex = []
-      this.checkItems.forEach((item, index) => {
-        // 与checkboxChange返回的数组保持一致为字符串数组
-        this.checkedItemIndex.push(index.toString())
-      })
+
+      return true
     }
   }
 </script>
