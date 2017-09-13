@@ -250,6 +250,7 @@
 
   export default class Index extends wepy.page {
     data = {
+      activityId: null,
       tabs: ['明细', '结算', '统计'],
       activeIndex: 0,
       sliderOffset: 0,
@@ -282,12 +283,12 @@
           switch (res.tapIndex) {
             case 0:
               wepy.navigateTo({
-                url: 'addConsume'
+                url: 'addConsume?activityId=' + this.activityId
               })
               break
             case 1:
               wepy.navigateTo({
-                url: 'addFund'
+                url: 'addFund?activityId=' + this.activityId
               })
               break
             default:
@@ -299,12 +300,16 @@
       }
     }
 
-    async onLoad() {
+    async onLoad(options) {
       let res = await wepy.getSystemInfo()
 
       this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2
       this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex
       this.$apply()
+
+      if(options.activityId !== undefined) {
+        this.activityId = options.activityId
+      }
 
      new wxCharts({
         canvasId: 'pieCanvas',

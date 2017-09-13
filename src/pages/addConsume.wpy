@@ -64,10 +64,10 @@
           <view class="weui-cell__bd">
             <picker class="weui-cell__bd"
                     value="{{userSelected}}"
-                    range="{{userRange}}"
-                    range-key="name"
+                    range="{{checkItems}}"
+                    range-key="userName"
                     @change="userChange">
-              <view class="weui-input">{{userRange[userSelected].name}}</view>
+              <view class="weui-input">{{checkItems[userSelected].userName}}</view>
             </picker>
           </view>
         </view>
@@ -76,11 +76,11 @@
             <view class="weui-label">日期</view>
           </view>
           <view class="weui-cell__bd">
-            <picker mode="date" value="{{date}}"
+            <picker mode="date" value="{{createdDate}}"
                     start="2017-09-01"
                     end="2037-09-01"
                     @change="dateChange">
-              <view class="weui-input">{{date}}</view>
+              <view class="weui-input">{{createdDate}}</view>
             </picker>
           </view>
         </view>
@@ -104,16 +104,16 @@
                       size="23"
                       wx:if="{{item.checked}}"></icon>
               </view>
-              <view class="weui-cell__bd page__title">{{item.name}}</view>
+              <view class="weui-cell__bd page__title">{{item.userName}}</view>
             </label>
             <!--将人数换算成weight数组的角标，如果人数为n对应weightRange数组的第[n-1]个，所以需要减1-->
             <picker class="weui-cell__bd"
-                    value="{{item.weight - 1}}"
+                    value="{{item.userWeight - 1}}"
                     range="{{weightRange}}"
                     @change="weightChange({{index}})">
-              <view class="weui-input page__desc">人数{{item.weight}}</view>
+              <view class="weui-input page__desc">人数{{item.userWeight}}</view>
             </picker>
-            <view class="weui-cell page__title consume">{{item.total}}</view>
+            <view class="weui-cell page__title consume">{{item.bill}}</view>
           </view>
         </checkbox-group>
       </view>
@@ -132,7 +132,9 @@
       <view class="weui-btn-area">
         <button class="weui-btn"
                 type="primary"
-                @tap="showTopTips">
+                @tap="addItem"
+                loading="{{loading}}"
+                disabled="{{loading}}">
           确定
         </button>
       </view>
@@ -159,7 +161,7 @@
         let weightTotal = 0
         this.checkItems.forEach((item) => {
           if (item.checked === true) {
-            weightTotal += item.weight
+            weightTotal += item.userWeight
           }
         })
         return weightTotal
@@ -176,10 +178,9 @@
 
           // 计算此人的分摊费用
           if (item.checked === true) {
-            item.total = Number((this.total / this.weightTotal * item.weight).toFixed(2))
+            item.bill = Number((this.total / this.weightTotal * item.userWeight).toFixed(2))
           } else {
-            // 统一显示格式为2位小数
-            item.total = 0
+            item.bill = 0
           }
         })
         this.$apply()
@@ -187,16 +188,19 @@
     }
 
     data = {
+      activityId: 20,
+      userId: 26,
       typeRange: ['餐饮', '娱乐', '住宿', '出行'],
       description: '餐饮',
+      note:'',
       typeSelected: 0,
       total: '',
       checkItems: [],
       checkedItemIndex: [],
       weightRange: [],
-      userRange: [],
       userSelected: 0,
-      date: ''
+      createdDate: '',
+      loading: false
     }
 
     methods = {
@@ -207,10 +211,10 @@
         }
       },
       weightChange(index, e) {
-        this.checkItems[index].weight = this.weightRange[e.detail.value]
+        this.checkItems[index].userWeight = this.weightRange[e.detail.value]
       },
       dateChange(e) {
-        this.date = e.detail.value
+        this.createdDate = e.detail.value
       },
       checkChange(e) {
         this.checkedItemIndex = e.detail.value
@@ -221,7 +225,7 @@
       bindBlur: function (e) {
         if (e.currentTarget.id === 'total') {
           let value = Number(e.detail.value)
-          if (Number.isNaN(value)) {
+          if (Number.isNaN(value) || value < 0 ) {
             value = 0
           }
           if (this.total !== value) {
@@ -231,32 +235,125 @@
         } else {
           this[e.currentTarget.id] = e.detail.value
         }
+      },
+      addItem: function () {
+        if(!this.validate()) {
+          wepy.showToast({
+            title: '请填写完整',
+            image:'./../images/删除.svg',
+            duration: 2000
+          })
+          return
+        }
+
+        this.loading = true;
+        let item = {
+          itemDetailList: []
+        }
+        item.itemType = this.typeSelected
+        item.itemDescription = this.description
+        item.itemNote = this.note
+        item.fundOrConsume = 1
+        item.createdDate = this.createdDate
+        item.activityId = this.activityId
+        item.userId = this.userId
+        item.itemTotal = this.total
+        this.checkItems.forEach((checkItem, index) => {
+          let itemDetail = {}
+          if(index == this.userSelected) {
+            itemDetail.exp = this.total
+          }else {
+            itemDetail.exp = 0
+          }
+          itemDetail.bill = checkItem.bill
+          itemDetail.userId = checkItem.userId
+          itemDetail.userWeight = checkItem.userWeight
+          itemDetail.userName = checkItem.userName
+          item.itemDetailList.push(itemDetail)
+        })
+
+        this.$parent.request({
+          url: 'http://localhost:8088/activity/item',
+          data: item,
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'POST'
+        }).then((res) => {
+          this.loading  = false
+          this.$apply()
+          let activityId = res;
+          wepy.redirectTo({
+            url: 'index?activityId='+ activityId
+          })
+        }).catch((error) => {
+          this.loading  = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image:'./../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
+        })
       }
     }
 
-    onLoad() {
+    onLoad(options) {
+     /* this.activityId = options.activityId;*/
+      wepy.showLoading({
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: 'http://localhost:8088/activity/' +this.activityId + '/user',
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        res.forEach((item, index) => {
+          item.checked  = true
+          item.bill = 0
+          this.checkItems.push(item)
+          this.checkedItemIndex.push(index.toString())
+          let user = {}
+          user.userName = item.userName
+          user.userId = item.userId
+          if(item.userId === this.userId) {
+            this.userSelected = index
+          }
+        })
+        this.$apply()
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image:'./../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
+      })
       for (let i = 1; i < 99; i++) {
         this.weightRange.push(i)
       }
-      this.date = new Date().formatString('yyyy-MM-dd')
-      this.checkItems = [
-        {name: '陈昕然', id: 111, checked: true, weight: 2, total: 0},
-        {name: '宋玥沄', id: 2221, checked: true, weight: 1, total: 0}
-      ]
-      this.checkItems.forEach((item) => {
-        let user = {}
-        user.name = item.name
-        user.id = item.id
-        this.userRange.push(user)
-      })
-      this.userSelected = this.userRange.findIndex((item) => {
-        return item.id === 2221
-      })
-      this.checkedItemIndex = []
-      this.checkItems.forEach((item, index) => {
-        // 与checkboxChange返回的数组保持一致为字符串数组
-        this.checkedItemIndex.push(index.toString())
-      })
+      this.createdDate = new Date().formatString('yyyy-MM-dd')
+    }
+
+    validate() {
+      if(this.total === 0 || this.total === '') {
+        return false
+      }
+
+      if(this.description.trim() === '') {
+        return false
+      }
+
+      if(this.checkedItemIndex.length === 0 ) {
+        return false
+      }
+
+      return true
     }
   }
 </script>

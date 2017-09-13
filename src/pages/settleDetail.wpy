@@ -22,10 +22,6 @@
 
 <template>
   <view class="page">
-    <view class="type-group">
-      <image src="./../images/结算.svg">
-      </image>
-    </view>
     <view class="page__bd">
 
       <view class="container">

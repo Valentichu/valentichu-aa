@@ -132,7 +132,8 @@
         <button class="weui-btn"
                 type="primary"
                 @tap="addActivity"
-                loading="{{loading}}">
+                loading="{{loading}}"
+                disabled="{{loading}}">
           确定
         </button>
       </view>
@@ -211,24 +212,10 @@
           return
         }
 
-        if(this.$parent.globalData.token === null){
-          let token = this.$parent.login()
-          if(token === undefined) {
-            wepy.showToast({
-              title: '请检查网络',
-              image:'./../images/删除.svg',
-              duration: 2000
-            })
-            this.loading  = false
-            return
-          }
-        }
-
         let userDetailList = []
         userDetailList.push(this.createdUser)
         userDetailList = userDetailList.concat(this.userList)
-        console.log(userDetailList)
-        wepy.request({
+        this.$parent.request({
           url: 'http://localhost:8088/activity/',
           data: {
             activityName: this.activityName,
@@ -240,14 +227,21 @@
           },
           method: 'POST'
         }).then((res) => {
-          let result = res.data
-          if (result.code === 200) {
-           console.log(result)
-          } else {
-            console.log('获取失败！' + res.errMsg)
-          }
-        }).catch((error) => {
-          console.log('获取失败！' + error)
+            this.loading  = false
+            this.$apply()
+            let activityId = res;
+            wepy.redirectTo({
+              url: 'index?activityId='+ activityId
+            })
+          }).catch((error) => {
+          this.loading  = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image:'./../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
         })
       }
     }
