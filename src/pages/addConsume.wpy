@@ -26,7 +26,7 @@
              wx:key="*this"
              id="{{index}}"
              class="{{index == typeSelected ? '': 'grey'}}"
-             src="./../images/{{item}}.svg"
+             src="./../images/{{index}}.svg"
              catchtap="typeChange">
       </image>
     </view>
@@ -39,7 +39,7 @@
           <view class="weui-cell__bd">
             <input class="weui-input consume"
                    value="{{total}}"
-                   ype="digit"
+                   type="digit"
                    placeholder="请输入金额"
                    id="total"
                    bindblur="bindBlur"/>
@@ -265,7 +265,9 @@
           }else {
             itemDetail.exp = 0
           }
+          itemDetail.activityId =this.activityId
           itemDetail.bill = checkItem.bill
+          itemDetail.fundOrConsume = 1
           itemDetail.userId = checkItem.userId
           itemDetail.userWeight = checkItem.userWeight
           itemDetail.userName = checkItem.userName
@@ -273,7 +275,7 @@
         })
 
         this.$parent.request({
-          url: 'http://localhost:8088/activity/item',
+          url: 'http://localhost:8088/activity/' + this.activityId + '/item',
           data: item,
           header: {
             Authorization: this.$parent.globalData.token

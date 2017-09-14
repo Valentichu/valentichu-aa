@@ -29,19 +29,22 @@
     <view class="page__bd">
       <view class="weui-panel weui-panel_access">
         <view class="weui-panel__bd">
-          <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-
+          <navigator url=""
+                     class="weui-media-box weui-media-box_appmsg"
+                     hover-class="weui-cell_active"
+                     wx:for="{{activityList}}"
+                     wx:key="{{item.activityId}}">
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">2017-09-09</view>
-              <view class="weui-media-box__title page__title">蒲江一日游</view>
+              <view class="weui-media-box__desc">{{item.createdDate}}</view>
+              <view class="weui-media-box__title page__title">{{item.activityName}}</view>
             </view>
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">交款</view>
-              <view class="weui-media-box__title pay page__title">2500.00</view>
+              <view class="weui-media-box__title pay page__title">{{item.fund}}</view>
             </view>
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">消费</view>
-              <view class="weui-media-box__title consume page__title">2500.00</view>
+              <view class="weui-media-box__title consume page__title">{{item.consume}}</view>
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </navigator>
@@ -66,7 +69,7 @@
     }
 
     data = {
-      name: ''
+      activityList: []
     }
 
     methods = {
@@ -76,7 +79,48 @@
     }
 
     onLoad() {
-      this.name = '陈昕然'
+      wepy.showLoading({
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: 'http://localhost:8088/activity/',
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        let activityList = []
+        res.forEach((item) => {
+          let activity = {
+            activityId: item.activityId,
+            activityName: item.activityName,
+            createdDate:item.createdDate,
+            fund: 0,
+            consume: 0
+          }
+          if(item.totals.length > 0) {
+            item.totals.forEach((total) => {
+              if(total.fundOrConsume === 0) {
+                activity.fund = total.total
+              } else {
+                activity.consume = total.total
+              }
+            })
+          }
+          activityList.push(activity)
+          this.activityList = activityList
+          this.$apply()
+        })
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image:'./../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
+      })
     }
   }
 </script>

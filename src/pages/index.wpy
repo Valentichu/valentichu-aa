@@ -4,8 +4,7 @@
     justify-content: space-between;
     align-items: center;
     image,
-    span.placeholder
-    {
+    span.placeholder {
       width: 50rpx;
       height: 50rpx;
       margin: 20rpx 0 0 60rpx;
@@ -18,8 +17,7 @@
     height: 15%;
     width: 100%;
     border-top: 1rpx solid #CCCCCC;
-    image
-    {
+    image {
       height: 100rpx;
       width: 100rpx;
       margin-left: 40rpx;
@@ -40,8 +38,7 @@
 
   .sidebar {
     width: 50%;
-    image
-    {
+    image {
       width: 50rpx;
       height: 50rpx;
       margin: 20rpx 0 0 60rpx;
@@ -79,9 +76,9 @@
   }
 
   .canvas-wrapper {
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
   }
 
@@ -150,31 +147,25 @@
           <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
             <view class="weui-panel weui-panel_access">
               <view class="weui-panel__bd">
-                <navigator url="addFund" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                <navigator url="{{item.fundOrConsume === 0 ? 'addFund' : 'addConsume'}}"
+                           class="weui-media-box weui-media-box_appmsg"
+                           hover-class="weui-cell_active"
+                           wx:for="{{statistics.statisticsDetailList}}"
+                           wx:key="{{item.itemId}}  ">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg" wx:if="{{item.fundOrConsume === 0}}">
                     <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
                   </view>
-                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__desc">陈昕然</view>
-                    <view class="weui-media-box__title page__title">收款</view>
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg" wx:if="{{item.fundOrConsume === 1}}">
+                    <image class="weui-media-box__thumb" src="./../images/{{item.itemType}}.svg"/>
                   </view>
                   <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__desc">2017-09-08</view>
-                    <view class="weui-media-box__title pay page__title">2500.00</view>
-                  </view>
-                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-                </navigator>
-                <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                    <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
+                    <view class="weui-media-box__desc">{{item.userName}}</view>
+                    <view class="weui-media-box__title page__title">{{item.itemDescription}}</view>
                   </view>
                   <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__desc">陈昕然</view>
-                    <view class="weui-media-box__title page__title">肥肠鸡</view>
-                  </view>
-                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__desc">2017-09-08</view>
-                    <view class="weui-media-box__title consume page__title">2500.00</view>
+                    <view class="weui-media-box__desc">{{item.createdDate}}</view>
+                    <view class="weui-media-box__title pay page__title" wx:if="{{item.fundOrConsume === 0}}">{{item.itemTotal}}</view>
+                    <view class="weui-media-box__title consume page__title" wx:if="{{item.fundOrConsume === 1}}">{{item.itemTotal}}</view>
                   </view>
                   <view class="weui-cell__ft weui-cell__ft_in-access"></view>
                 </navigator>
@@ -184,30 +175,24 @@
           <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
             <view class="weui-panel weui-panel_access">
               <view class="weui-panel__bd">
-                <navigator url="settleDetail" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                <navigator url="settleDetail"
+                           class="weui-media-box weui-media-box_appmsg"
+                           hover-class="weui-cell_active"
+                           wx:for="{{statistics.statisticsSettlementList}}"
+                           wx:key="{{item.userId}}">
                   <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
                     <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
                   </view>
                   <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__title page__title">陈昕然</view>
+                    <view class="weui-media-box__title page__title">{{item.userName}}</view>
                   </view>
-                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg" wx:if="{{item.total < 0}}">
                     <view class="weui-media-box__desc">应补</view>
-                    <view class="weui-media-box__title pay page__title">2500.00</view>
+                    <view class="weui-media-box__title pay page__title">{{-item.total}}</view>
                   </view>
-                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-                </navigator>
-
-                <navigator url="settleDetail" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                    <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
-                  </view>
-                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                    <view class="weui-media-box__title page__title">宋玥沄</view>
-                  </view>
-                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg" wx:if="{{item.total >= 0}}">
                     <view class="weui-media-box__desc">应退</view>
-                    <view class="weui-media-box__title refund page__title">2500.00</view>
+                    <view class="weui-media-box__title refund page__title">{{item.total}}</view>
                   </view>
                   <view class="weui-cell__ft weui-cell__ft_in-access"></view>
                 </navigator>
@@ -232,8 +217,8 @@
             <view class="weui-flex__item page__desc">收款</view>
           </view>
           <view class="weui-flex">
-            <view class="weui-flex__item page__title consume">5000.00</view>
-            <view class="weui-flex__item page__title pay">10000.00</view>
+            <view class="weui-flex__item page__title consume">{{consumeTotal}}</view>
+            <view class="weui-flex__item page__title pay">{{fundTotal}}</view>
           </view>
         </view>
       </view>
@@ -249,14 +234,68 @@
   const sliderWidth = 96 // 需要设置slider的宽度，用于计算中间位置
 
   export default class Index extends wepy.page {
+    computed = {
+      pieChart() {
+        if (this.statistics.statisticsConsumeTypeList) {
+          let pieSeries = []
+          this.statistics.statisticsConsumeTypeList.forEach((item) => {
+            let pie = {}
+            switch (item.itemType) {
+              case 0:
+                pie.name = '餐饮'
+                break
+              case 1:
+                pie.name = '娱乐'
+                break
+              case 2:
+                pie.name = '住宿'
+                break
+              case 3:
+                pie.name = '出行'
+                break
+            }
+            pie.data = item.total
+            pieSeries.push(pie)
+          })
+          new wxCharts({
+            canvasId: 'pieCanvas',
+            type: 'pie',
+            series: pieSeries,
+            width: 360,
+            height: 300,
+            dataLabel: true
+          })
+        }
+      },
+      computeTotal() {
+        if (this.statistics.statisticsDetailList) {
+          let consumeTotal = 0
+          let fundTotal = 0
+          this.statistics.statisticsDetailList.forEach((item) => {
+            if (item.fundOrConsume === 0) {
+              fundTotal += item.itemTotal
+            } else {
+              consumeTotal += item.itemTotal
+            }
+          })
+          this.consumeTotal = consumeTotal
+          this.fundTotal = fundTotal
+          this.$apply()
+        }
+      }
+    }
+
     data = {
-      activityId: null,
+      consumeTotal:0,
+      fundTotal:0,
+      activityId: 20,
       tabs: ['明细', '结算', '统计'],
       activeIndex: 0,
       sliderOffset: 0,
       sliderLeft: 0,
       sidebar: false,
-    };
+      statistics: []
+    }
 
     methods = {
       tabClick(e) {
@@ -305,31 +344,29 @@
 
       this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2
       this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex
-      this.$apply()
 
-      if(options.activityId !== undefined) {
-        this.activityId = options.activityId
-      }
-
-     new wxCharts({
-        canvasId: 'pieCanvas',
-        type: 'pie',
-        series: [{
-          name: '餐饮',
-          data: 50,
-        }, {
-          name: '娱乐',
-          data: 30,
-        }, {
-          name: '出行',
-          data: 10,
-        }, {
-          name: '住宿',
-          data: 10,
-        }],
-        width: 360,
-        height: 300,
-        dataLabel: true
+      /* this.activityId = options.activityId;*/
+      wepy.showLoading({
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: 'http://localhost:8088/activity/' + this.activityId + '/statistics',
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        this.statistics = res
+        this.$apply()
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image: './../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
       })
     }
   }
