@@ -61,12 +61,12 @@
 
     methods = {
       addActivity() {
-        wx.navigateTo({
+        wepy.navigateTo({
           url: 'addActivity'
         })
       },
       viewActivity() {
-        wx.navigateTo({
+        wepy.navigateTo({
           url: 'viewActivity'
         })
       }
@@ -81,16 +81,15 @@
         console.log(res)
         this.disable = false
         this.$apply()
-      }) .catch((error) => {
+      }).catch((error) => {
         wepy.hideLoading()
         console.log(error)
         this.$apply()
         wepy.showToast({
           title: '网络状况差',
-          image:'./../images/删除.svg',
+          image: './../images/删除.svg',
           duration: 2000
         })
-
       })
     }
   }

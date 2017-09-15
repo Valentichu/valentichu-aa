@@ -190,7 +190,7 @@
       userId: null,
       typeRange: ['餐饮', '娱乐', '住宿', '出行'],
       description: '收款',
-      note:'',
+      note: '',
       fundAverage: '',
       total: '',
       checkItems: [],
@@ -229,16 +229,16 @@
         }
       },
       addFund: function () {
-        if(!this.validate()) {
+        if (!this.validate()) {
           wepy.showToast({
             title: '请填写完整',
-            image:'./../images/删除.svg',
+            image: './../images/删除.svg',
             duration: 2000
           })
           return
         }
 
-        this.loading = true;
+        this.loading = true
         let item = {
           itemDetailList: []
         }
@@ -252,9 +252,9 @@
         item.itemTotal = this.total
         this.checkItems.forEach((checkItem, index) => {
           let itemDetail = {}
-          if(index == this.userSelected) {
+          if (index === this.userSelected) {
             itemDetail.bill = this.total
-          }else {
+          } else {
             itemDetail.bill = 0
           }
           itemDetail.activityId = this.$parent.activityId
@@ -274,17 +274,16 @@
           },
           method: 'POST'
         }).then((res) => {
-          this.loading  = false
           this.$apply()
-          wepy.redirectTo({
+          wepy.reLaunch({
             url: 'mainActivity'
           })
         }).catch((error) => {
-          this.loading  = false
+          this.loading = false
           this.$apply()
           wepy.showToast({
             title: '网络状况差',
-            image:'./../images/删除.svg',
+            image: './../images/删除.svg',
             duration: 2000
           })
           console.log(error)
@@ -293,27 +292,24 @@
     }
 
     validate() {
-      if(this.total === 0 || this.total === '') {
+      if (this.total === 0 || this.total === '') {
         return false
       }
-
-      if(this.description.trim() === '') {
+      if (this.description.trim() === '') {
         return false
       }
-
-      if(this.checkedItemIndex.length === 0 ) {
+      if (this.checkedItemIndex.length === 0) {
         return false
       }
-
       return true
     }
 
-    onLoad(options) {/* this.activityId = options.activityId;*/
+    onLoad(options) {
       wepy.showLoading({
         title: '加载中'
       })
       this.$parent.request({
-        url: '/activity/' +this.$parent.activityId + '/user',
+        url: '/activity/' + this.$parent.activityId + '/user',
         header: {
           Authorization: this.$parent.globalData.token
         },
@@ -321,14 +317,14 @@
       }).then((res) => {
         wepy.hideLoading()
         res.forEach((item, index) => {
-          item.checked  = true
+          item.checked = true
           item.exp = 0
           this.checkItems.push(item)
           this.checkedItemIndex.push(index.toString())
           let user = {}
           user.userName = item.userName
           user.userId = item.userId
-          if(item.currentUser) {
+          if (item.currentUser) {
             this.userSelected = index
             this.userId = item.userId
           }
@@ -338,7 +334,7 @@
         wepy.hideLoading()
         wepy.showToast({
           title: '网络状况差',
-          image:'./../images/删除.svg',
+          image: './../images/删除.svg',
           duration: 2000
         })
         console.log(error)

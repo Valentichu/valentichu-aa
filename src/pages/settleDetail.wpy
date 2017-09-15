@@ -31,27 +31,25 @@
 
       <view>
         <view class="weui-cells__title">交款</view>
-        <view class="weui-panel weui-panel_access">
-          <view class="weui-panel__bd">
-            <navigator url="addFund" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">2017-09-09</view>
-                <view class="weui-media-box__title page__title">交款</view>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">交款</view>
-                <view class="weui-media-box__title consume page__title">2500</view>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">收款</view>
-                <view class="weui-media-box__title pay page__title">5000</view>
-              </view>
-              <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-            </navigator>
-          </view>
+        <view class="weui-panel">
+          <navigator url="addFund" class="weui-media-box weui-media-box_appmsg">
+            <view class="weui-media-box__hd_in-appmsg">
+              <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">2017-09-09</view>
+              <view class="weui-media-box__title page__title">交款</view>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">交款</view>
+              <view class="weui-media-box__title consume page__title">2500</view>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">收款</view>
+              <view class="weui-media-box__title pay page__title">5000</view>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </navigator>
         </view>
       </view>
 
@@ -59,30 +57,26 @@
       <view>
         <view class="weui-cells__title">消费</view>
         <view class="weui-panel weui-panel_access">
-          <view class="weui-panel__bd">
-            <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-                <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">2017-09-09</view>
-                <view class="weui-media-box__title page__title">肥肠鸡</view>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">付款</view>
-                <view class="weui-media-box__title consume page__title">5000</view>
-              </view>
-              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__desc">分摊</view>
-                <view class="weui-media-box__title pay page__title">2500</view>
-              </view>
-              <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-            </navigator>
-
-          </view>
+          <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg">
+            <view class="weui-media-box__hd_in-appmsg">
+              <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">2017-09-09</view>
+              <view class="weui-media-box__title page__title">肥肠鸡</view>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">付款</view>
+              <view class="weui-media-box__title consume page__title">5000</view>
+            </view>
+            <view class="weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__desc">分摊</view>
+              <view class="weui-media-box__title pay page__title">2500</view>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </navigator>
         </view>
       </view>
-
     </view>
   </view>
 </template>

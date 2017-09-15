@@ -27,29 +27,26 @@
       </image>
     </view>
     <view class="page__bd">
-      <view class="weui-panel weui-panel_access">
-        <view class="weui-panel__bd">
-          <navigator class="weui-media-box weui-media-box_appmsg"
-                     hover-class="weui-cell_active"
-                     open-type="reLaunch"
-                     @tap="goto({{item.activityId}})"
-                     wx:for="{{activityList}}"
-                     wx:key="{{item.activityId}}">
-            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">{{item.createdDate}}</view>
-              <view class="weui-media-box__title page__title">{{item.activityName}}</view>
-            </view>
-            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">交款</view>
-              <view class="weui-media-box__title pay page__title">{{item.fund}}</view>
-            </view>
-            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">消费</view>
-              <view class="weui-media-box__title consume page__title">{{item.consume}}</view>
-            </view>
-            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-          </navigator>
-        </view>
+      <view class="weui-panel">
+        <navigator class="weui-media-box weui-media-box_appmsg"
+                   open-type="reLaunch"
+                   @tap="goto({{item}})"
+                   wx:for="{{activityList}}"
+                   wx:key="{{item.activityId}}">
+          <view class="weui-media-box__bd_in-appmsg">
+            <view class="weui-media-box__desc">{{item.createdDate}}</view>
+            <view class="weui-media-box__title page__title">{{item.activityName}}</view>
+          </view>
+          <view class="weui-media-box__bd_in-appmsg">
+            <view class="weui-media-box__desc">交款</view>
+            <view class="weui-media-box__title pay page__title">{{item.fund}}</view>
+          </view>
+          <view class="weui-media-box__bd_in-appmsg">
+            <view class="weui-media-box__desc">消费</view>
+            <view class="weui-media-box__title consume page__title">{{item.consume}}</view>
+          </view>
+          <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </navigator>
       </view>
     </view>
   </view>
@@ -77,8 +74,9 @@
       bindBlur(e) {
         this[e.currentTarget.id] = e.detail.value
       },
-      goto(activityId) {
-        this.$parent.activityId = activityId
+      goto(activity) {
+        this.$parent.activityId = activity.activityId
+        this.$parent.activityName = activity.activityName
         wepy.reLaunch({
           url: 'mainActivity'
         })
@@ -102,13 +100,13 @@
           let activity = {
             activityId: item.activityId,
             activityName: item.activityName,
-            createdDate:item.createdDate,
+            createdDate: item.createdDate,
             fund: 0,
             consume: 0
           }
-          if(item.totals.length > 0) {
+          if (item.totals.length > 0) {
             item.totals.forEach((total) => {
-              if(total.fundOrConsume === 0) {
+              if (total.fundOrConsume === 0) {
                 activity.fund = total.total
               } else {
                 activity.consume = total.total
@@ -123,7 +121,7 @@
         wepy.hideLoading()
         wepy.showToast({
           title: '网络状况差',
-          image:'./../images/删除.svg',
+          image: './../images/删除.svg',
           duration: 2000
         })
         console.log(error)

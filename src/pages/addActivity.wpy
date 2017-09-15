@@ -156,15 +156,15 @@
     }
 
     data = {
-      loading:false,
+      loading: false,
       currentNum: 1,
       weightRange: [],
       activityName: '',
       createdDate: '',
       createdUser: {
-        userName:'',
-        userWeight:1,
-        currentUser:true
+        userName: '',
+        userWeight: 1,
+        currentUser: true
       },
       userList: []
     }
@@ -184,31 +184,31 @@
         }
       },
       bindBlurUserList: function (index, e) {
-       this.userList[index].userName = e.detail.value
+        this.userList[index].userName = e.detail.value
       },
       userListWeightChange: function (index, e) {
         this.userList[index].userWeight = this.weightRange[e.detail.value]
       },
-      addUser: function(){
+      addUser: function () {
         this.userList.push({
           userName: '成员' + this.currentNum,
-          userWeight:1,
-          currentUser:false
+          userWeight: 1,
+          currentUser: false
         })
-        this.currentNum ++
+        this.currentNum++
       },
       deleteUser: function (index) {
-        this.userList.splice(index,1)
+        this.userList.splice(index, 1)
       },
       addActivity: function () {
-        this.loading  = true
-        if(!this.validate()) {
+        this.loading = true
+        if (!this.validate()) {
           wepy.showToast({
             title: '请填写完整',
-            image:'./../images/删除.svg',
+            image: './../images/删除.svg',
             duration: 2000
           })
-          this.loading  = false
+          this.loading = false
           return
         }
 
@@ -219,27 +219,26 @@
           url: '/activity/',
           data: {
             activityName: this.activityName,
-            createdDate:this.createdDate,
-            userDetailList:userDetailList
+            createdDate: this.createdDate,
+            userDetailList: userDetailList
           },
           header: {
             Authorization: this.$parent.globalData.token
           },
           method: 'POST'
         }).then((res) => {
-            this.loading  = false
-            this.$apply()
-            let activityId = res;
-            this.$parent.activityId = res
-            wepy.reLaunch({
-              url: 'mainActivity'
-            })
-          }).catch((error) => {
-          this.loading  = false
+          this.$apply()
+          this.$parent.activityId = res
+          this.$parent.activityName = this.activityName
+          wepy.reLaunch({
+            url: 'mainActivity'
+          })
+        }).catch((error) => {
+          this.loading = false
           this.$apply()
           wepy.showToast({
             title: '网络状况差',
-            image:'./../images/删除.svg',
+            image: './../images/删除.svg',
             duration: 2000
           })
           console.log(error)
@@ -255,16 +254,14 @@
     }
 
     validate() {
-      if(this.createdUser.userName.trim() === '' || this.activityName.trim() ==='') {
+      if (this.createdUser.userName.trim() === '' || this.activityName.trim() === '') {
         return false
       }
-
       this.userList.forEach((item) => {
-        if(item.userName.trim() === '') {
+        if (item.userName.trim() === '') {
           return false
         }
       })
-
       return true
     }
   }
