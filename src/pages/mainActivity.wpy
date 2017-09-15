@@ -1,0 +1,364 @@
+<style lang="less">
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    image,
+    span.placeholder {
+      width: 50rpx;
+      height: 50rpx;
+      margin: 20rpx 0 0 60rpx;
+    }
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    height: 15%;
+    width: 100%;
+    border-top: 1rpx solid #CCCCCC;
+    image {
+      height: 100rpx;
+      width: 100rpx;
+      margin-left: 40rpx;
+      margin-right: 20rpx;
+    }
+  }
+
+  .weui-tab {
+    height: 80%;
+  }
+
+  .display {
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .sidebar {
+    width: 50%;
+    image {
+      width: 50rpx;
+      height: 50rpx;
+      margin: 20rpx 0 0 60rpx;
+    }
+  }
+
+  .page-bottom {
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    position: fixed;
+    background: white;
+  }
+
+  .page-top {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    transition: All 0.4s ease;
+    -webkit-transition: All 0.4s ease;
+    position: fixed;
+    background: #F8F8F8;
+  }
+
+  .transform-left {
+    transform: rotate(0deg) scale(1) translate(50%, 0%);
+    -webkit-transform: rotate(0deg) scale(1) translate(50%, 0%);
+  }
+
+  .icon {
+    margin-right: 5px;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+  }
+
+  .canvas-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .delete {
+    color: #d81e06;
+  }
+
+  .refund {
+    color: #3CC51F;
+  }
+
+  .pay {
+    color: #C13E3E;
+  }
+
+  .consume {
+    color: #1296db;
+  }
+</style>
+<template>
+  <view class="page">
+    <view class="page-bottom">
+      <view class="weui-cells weui-cells_after-title sidebar">
+        <navigator url="addActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">新增活动</view>
+          <view class="weui-cell__hd">
+            <image src="./../images/新增.svg" class="icon"></image>
+          </view>
+        </navigator>
+        <navigator url="viewActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">查看活动</view>
+          <view class="weui-cell__hd">
+            <image src="./../images/查看.svg" class="icon"></image>
+          </view>
+        </navigator>
+        <navigator url="editActivity" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">编辑活动</view>
+          <view class="weui-cell__hd">
+            <image src="./../images/编辑.svg" class="icon"></image>
+          </view>
+        </navigator>
+      </view>
+    </view>
+
+    <view class="page-top {{sidebar ? 'transform-left' : ''}}"
+          catchtap="sidebarClose">
+      <view class="header">
+        <image src="./../images/菜单.svg" catchtap="sidebarToggle"></image>
+        <span>蒲江一日游</span>
+        <span class="placeholder"></span>
+      </view>
+      <view class="weui-tab">
+        <view class="weui-navbar">
+          <view wx:for="{{tabs}}"
+                wx:key="*this"
+                id="{{index}}"
+                class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}"
+                catchtap="tabClick">
+            <view class="weui-navbar__title">{{item}}</view>
+          </view>
+          <view class="weui-navbar__slider"
+                style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);">
+          </view>
+        </view>
+        <view class="weui-tab__panel">
+          <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
+            <view class="weui-panel weui-panel_access">
+              <view class="weui-panel__bd">
+                <navigator url="{{item.fundOrConsume === 0 ? 'addFund' : 'addConsume'}}"
+                           class="weui-media-box weui-media-box_appmsg"
+                           hover-class="weui-cell_active"
+                           wx:for="{{statistics.statisticsDetailList}}"
+                           wx:key="{{item.itemId}}  ">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg" wx:if="{{item.fundOrConsume === 0}}">
+                    <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
+                  </view>
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg" wx:if="{{item.fundOrConsume === 1}}">
+                    <image class="weui-media-box__thumb" src="./../images/{{item.itemType}}.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">{{item.userName}}</view>
+                    <view class="weui-media-box__title page__title">{{item.itemDescription}}</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__desc">{{item.createdDate}}</view>
+                    <view class="weui-media-box__title pay page__title" wx:if="{{item.fundOrConsume === 0}}">{{item.itemTotal}}</view>
+                    <view class="weui-media-box__title consume page__title" wx:if="{{item.fundOrConsume === 1}}">{{item.itemTotal}}</view>
+                  </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+                </navigator>
+              </view>
+            </view>
+          </scroll-view>
+          <scroll-view class="weui-tab__content {{activeIndex == 1 ? 'display' :'hidden'}}" scroll-y>
+            <view class="weui-panel weui-panel_access">
+              <view class="weui-panel__bd">
+                <navigator url="settleDetail"
+                           class="weui-media-box weui-media-box_appmsg"
+                           hover-class="weui-cell_active"
+                           wx:for="{{statistics.statisticsSettlementList}}"
+                           wx:key="{{item.userId}}">
+                  <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <image class="weui-media-box__thumb" src="./../images/用户.svg"/>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__title page__title">{{item.userName}}</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg" wx:if="{{item.total < 0}}">
+                    <view class="weui-media-box__desc">应补</view>
+                    <view class="weui-media-box__title pay page__title">{{-item.total}}</view>
+                  </view>
+                  <view class="weui-media-box__bd weui-media-box__bd_in-appmsg" wx:if="{{item.total >= 0}}">
+                    <view class="weui-media-box__desc">应退</view>
+                    <view class="weui-media-box__title refund page__title">{{item.total}}</view>
+                  </view>
+                  <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+                </navigator>
+              </view>
+            </view>
+          </scroll-view>
+          <view class="weui-tab__content {{activeIndex == 2 ? 'display' :'hidden'}}">
+            <view class="page__desc container">消费分布</view>
+            <view class="canvas-wrapper">
+              <canvas canvas-id="pieCanvas" style="width: 360px;height: 300px"></canvas>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="footer">
+        <view class="weui-flex__item">
+          <image src="./../images/添加.svg" alt="" catchtap="showActionSheet"></image>
+        </view>
+        <view class="weui-flex__item">
+          <view class="weui-flex">
+            <view class="weui-flex__item page__desc">消费</view>
+            <view class="weui-flex__item page__desc">收款</view>
+          </view>
+          <view class="weui-flex">
+            <view class="weui-flex__item page__title consume">{{consumeTotal}}</view>
+            <view class="weui-flex__item page__title pay">{{fundTotal}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import wxCharts from './../utils/wxcharts'
+
+  const sliderWidth = 96 // 需要设置slider的宽度，用于计算中间位置
+
+  export default class MainActivity extends wepy.page {
+    computed = {
+      pieChart() {
+        if (this.statistics.statisticsConsumeTypeList && this.statistics.statisticsConsumeTypeList.length > 0) {
+          let pieSeries = []
+          this.statistics.statisticsConsumeTypeList.forEach((item) => {
+            let pie = {}
+            switch (item.itemType) {
+              case 0:
+                pie.name = '餐饮'
+                break
+              case 1:
+                pie.name = '娱乐'
+                break
+              case 2:
+                pie.name = '住宿'
+                break
+              case 3:
+                pie.name = '出行'
+                break
+            }
+            pie.data = item.total
+            pieSeries.push(pie)
+          })
+          new wxCharts({
+            canvasId: 'pieCanvas',
+            type: 'pie',
+            series: pieSeries,
+            width: 360,
+            height: 300,
+            dataLabel: true
+          })
+        }
+      },
+      computeTotal() {
+        if (this.statistics.statisticsDetailList  && this.statistics.statisticsDetailList.length > 0) {
+          let consumeTotal = 0
+          let fundTotal = 0
+          this.statistics.statisticsDetailList.forEach((item) => {
+            if (item.fundOrConsume === 0) {
+              fundTotal += item.itemTotal
+            } else {
+              consumeTotal += item.itemTotal
+            }
+          })
+          this.consumeTotal = consumeTotal
+          this.fundTotal = fundTotal
+          this.$apply()
+        }
+      }
+    }
+
+    data = {
+      consumeTotal:0,
+      fundTotal:0,
+      tabs: ['明细', '结算', '统计'],
+      activeIndex: 0,
+      sliderOffset: 0,
+      sliderLeft: 0,
+      sidebar: false,
+      statistics: []
+    }
+
+    methods = {
+      tabClick(e) {
+        this.sliderOffset = e.currentTarget.offsetLeft
+        this.activeIndex = e.currentTarget.id
+      },
+      sidebarToggle() {
+        if (this.sidebar) {
+          this.sidebar = false
+        } else {
+          this.sidebar = true
+        }
+      },
+      sidebarClose() {
+        if (this.sidebar) {
+          this.sidebar = false
+        }
+      },
+      showActionSheet() {
+        wepy.showActionSheet({
+          itemList: ['消费', '交款']
+        }).then((res) => {
+          if (res.tapIndex ===0) {
+            wepy.navigateTo({
+              url: 'addConsume'
+            })
+          } else {
+            wepy.navigateTo({
+              url: 'addFund'
+            })
+          }
+        }).catch((error) => {
+          console.log(error)
+        })
+      }
+    }
+
+    async onLoad(options) {
+      let res = await wepy.getSystemInfo()
+
+      this.sliderLeft = (res.windowWidth / this.tabs.length - sliderWidth) / 2
+      this.sliderOffset = res.windowWidth / this.tabs.length * this.activeIndex
+      wepy.showLoading({
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: '/activity/' + this.$parent.activityId + '/statistics',
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        this.statistics = res
+        this.$apply()
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image: './../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
+      })
+    }
+  }
+</script>

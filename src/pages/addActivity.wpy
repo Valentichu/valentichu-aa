@@ -164,7 +164,7 @@
       createdUser: {
         userName:'',
         userWeight:1,
-        bindOpenId:true
+        currentUser:true
       },
       userList: []
     }
@@ -193,7 +193,7 @@
         this.userList.push({
           userName: '成员' + this.currentNum,
           userWeight:1,
-          bindOpenId:false
+          currentUser:false
         })
         this.currentNum ++
       },
@@ -216,7 +216,7 @@
         userDetailList.push(this.createdUser)
         userDetailList = userDetailList.concat(this.userList)
         this.$parent.request({
-          url: 'http://localhost:8088/activity/',
+          url: '/activity/',
           data: {
             activityName: this.activityName,
             createdDate:this.createdDate,
@@ -230,8 +230,9 @@
             this.loading  = false
             this.$apply()
             let activityId = res;
-            wepy.redirectTo({
-              url: 'index?activityId='+ activityId
+            this.$parent.activityId = res
+            wepy.reLaunch({
+              url: 'mainActivity'
             })
           }).catch((error) => {
           this.loading  = false

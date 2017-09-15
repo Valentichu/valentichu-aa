@@ -29,9 +29,10 @@
     <view class="page__bd">
       <view class="weui-panel weui-panel_access">
         <view class="weui-panel__bd">
-          <navigator url=""
-                     class="weui-media-box weui-media-box_appmsg"
+          <navigator class="weui-media-box weui-media-box_appmsg"
                      hover-class="weui-cell_active"
+                     open-type="reLaunch"
+                     @tap="goto({{item.activityId}})"
                      wx:for="{{activityList}}"
                      wx:key="{{item.activityId}}">
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
@@ -73,8 +74,14 @@
     }
 
     methods = {
-      bindBlur: function (e) {
+      bindBlur(e) {
         this[e.currentTarget.id] = e.detail.value
+      },
+      goto(activityId) {
+        this.$parent.activityId = activityId
+        wepy.reLaunch({
+          url: 'mainActivity'
+        })
       }
     }
 
@@ -83,7 +90,7 @@
         title: '加载中'
       })
       this.$parent.request({
-        url: 'http://localhost:8088/activity/',
+        url: '/activity/',
         header: {
           Authorization: this.$parent.globalData.token
         },

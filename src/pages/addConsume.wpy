@@ -188,8 +188,7 @@
     }
 
     data = {
-      activityId: 20,
-      userId: 26,
+      userId: null,
       typeRange: ['餐饮', '娱乐', '住宿', '出行'],
       description: '餐饮',
       note:'',
@@ -255,7 +254,7 @@
         item.itemNote = this.note
         item.fundOrConsume = 1
         item.createdDate = this.createdDate
-        item.activityId = this.activityId
+        item.activityId = this.$parent.activityId
         item.userId = this.userId
         item.itemTotal = this.total
         this.checkItems.forEach((checkItem, index) => {
@@ -265,7 +264,7 @@
           }else {
             itemDetail.exp = 0
           }
-          itemDetail.activityId =this.activityId
+          itemDetail.activityId = this.$parent.activityId
           itemDetail.bill = checkItem.bill
           itemDetail.fundOrConsume = 1
           itemDetail.userId = checkItem.userId
@@ -275,7 +274,7 @@
         })
 
         this.$parent.request({
-          url: 'http://localhost:8088/activity/' + this.activityId + '/item',
+          url: '/activity/' + this.$parent.activityId + '/item',
           data: item,
           header: {
             Authorization: this.$parent.globalData.token
@@ -286,7 +285,7 @@
           this.$apply()
           let activityId = res;
           wepy.redirectTo({
-            url: 'index?activityId='+ activityId
+            url: 'mainActivity'
           })
         }).catch((error) => {
           this.loading  = false
@@ -307,7 +306,7 @@
         title: '加载中'
       })
       this.$parent.request({
-        url: 'http://localhost:8088/activity/' +this.activityId + '/user',
+        url: '/activity/' + this.$parent.activityId + '/user',
         header: {
           Authorization: this.$parent.globalData.token
         },
@@ -322,8 +321,9 @@
           let user = {}
           user.userName = item.userName
           user.userId = item.userId
-          if(item.userId === this.userId) {
+          if(item.currentUser) {
             this.userSelected = index
+            this.userId = item.userId
           }
         })
         this.$apply()
