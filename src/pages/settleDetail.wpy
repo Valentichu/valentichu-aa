@@ -15,6 +15,10 @@
     color: #C13E3E;
   }
 
+  .refund {
+    color: #3CC51F;
+  }
+
   .consume {
     color: #1296db;
   }
@@ -25,28 +29,32 @@
     <view class="page__bd">
 
       <view class="container">
-        <span class="page__title pay">应补:7500</span>
-        <span class="page__desc">陈昕然</span>
+        <span class="page__title pay" wx:if="{{total < 0}}">应补: {{total}}</span>
+        <span class="page__title refund" wx:if="{{total >= 0}}">应退: {{total}}</span>
+        <span class="page__desc">{{userName}}</span>
       </view>
 
-      <view>
+      <view wx:if="{{fundList.length > 0}}">
         <view class="weui-cells__title">交款</view>
         <view class="weui-panel">
-          <navigator url="addFund" class="weui-media-box weui-media-box_appmsg">
+          <navigator url="addFund"
+                     class="weui-media-box weui-media-box_appmsg"
+                     wx:for="{{fundList}}"
+                     wx:key="{{item.itemId}}">
             <view class="weui-media-box__hd_in-appmsg">
               <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">2017-09-09</view>
-              <view class="weui-media-box__title page__title">交款</view>
+              <view class="weui-media-box__desc">{{item.createdDate}}</view>
+              <view class="weui-media-box__title page__title">{{item.itemDescription}}</view>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">交款</view>
-              <view class="weui-media-box__title consume page__title">2500</view>
+              <view class="weui-media-box__title consume page__title">{{item.exp}}</view>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">收款</view>
-              <view class="weui-media-box__title pay page__title">5000</view>
+              <view class="weui-media-box__title pay page__title">{{item.bill}}</view>
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </navigator>
@@ -54,29 +62,33 @@
       </view>
 
 
-      <view>
+      <view wx:if="{{consumeList.length > 0}}">
         <view class="weui-cells__title">消费</view>
         <view class="weui-panel weui-panel_access">
-          <navigator url="addConsume" class="weui-media-box weui-media-box_appmsg">
+          <navigator url="addConsume"
+                     class="weui-media-box weui-media-box_appmsg"
+                     wx:for="{{consumeList}}"
+                     wx:key="{{item.itemId}}">
             <view class="weui-media-box__hd_in-appmsg">
-              <image class="weui-media-box__thumb" src="./../images/餐饮.svg"/>
+              <image class="weui-media-box__thumb" src="./../images/{{item.itemType}}.svg"/>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__desc">2017-09-09</view>
-              <view class="weui-media-box__title page__title">肥肠鸡</view>
+              <view class="weui-media-box__desc">{{item.createdDate}}</view>
+              <view class="weui-media-box__title page__title">{{item.itemDescription}}</view>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">付款</view>
-              <view class="weui-media-box__title consume page__title">5000</view>
+              <view class="weui-media-box__title consume page__title">{{item.exp}}</view>
             </view>
             <view class="weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__desc">分摊</view>
-              <view class="weui-media-box__title pay page__title">2500</view>
+              <view class="weui-media-box__title pay page__title">{{item.bill}}</view>
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </navigator>
         </view>
       </view>
+
     </view>
   </view>
 </template>
@@ -96,7 +108,22 @@
     }
 
     data = {
-      name: ''
+      fundList: [],
+      consumeList: [],
+      totalList:[],
+      userName: ''
+    }
+
+    computed = {
+      total() {
+        let billTotal = 0
+        let expTotal = 0
+        this.totalList.forEach((item) => {
+          billTotal += item.bill
+          expTotal += item.exp
+        })
+        return (expTotal - billTotal).toFixed(2)
+      }
     }
 
     methods = {
@@ -105,8 +132,40 @@
       }
     }
 
-    onLoad() {
-      this.name = '陈昕然'
+    onLoad(option) {
+      wepy.showLoading({
+        mask: true,
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: '/activity/' + this.$parent.activityId + '/user/' + option.userId + '/item',
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        this.totalList = res
+        res.forEach((item, index) => {
+          if(index === 0) {
+            this.userName = item.userName
+          }
+          if(item.fundOrConsume === 0) {
+            this.fundList.push(item)
+          } else {
+            this.consumeList.push(item)
+          }
+        })
+        this.$apply()
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image: './../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
+      })
     }
   }
 </script>

@@ -74,6 +74,7 @@
 
     onLoad(options) {
       wepy.showLoading({
+        mask: true,
         title: '加载中'
       })
       this.$parent.login().then((res) => {

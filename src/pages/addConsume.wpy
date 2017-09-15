@@ -219,7 +219,7 @@
         this.checkedItemIndex = e.detail.value
       },
       userChange(e) {
-        this.userSelected = e.detail.value
+        this.userSelected = Number(e.detail.value)
       },
       bindBlur: function (e) {
         if (e.currentTarget.id === 'total') {
@@ -300,6 +300,7 @@
 
     onLoad(options) {
       wepy.showLoading({
+        mask: true,
         title: '加载中'
       })
       this.$parent.request({
