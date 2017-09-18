@@ -37,7 +37,7 @@
           </view>
           <view class="weui-cell__bd">
             <input class="weui-input"
-                   value="{{total}}"
+                   value="{{activityName}}"
                    placeholder="请输入活动名称"
                    id="name"
                    bindblur="bindBlur"/>
@@ -80,12 +80,15 @@
       <view class="weui-btn-area">
         <button class="weui-btn"
                 type="primary"
-                disabled = "{{!confirmEnable}}"
-                @tap="showTopTips">
+                disabled = "{{!confirmEnable || confirmLoading || deleteLoading}}"
+                loading="{{confirmLoading}}"
+                @tap="editActivity">
           确定
         </button>
         <button class="weui-btn"
                 type="warn"
+                disabled = "{{confirmLoading || deleteLoading}}"
+                loading="{{deleteLoading}}"
                 @tap="deleteActivity">
           删除
         </button>
@@ -109,36 +112,104 @@
     }
 
     data = {
-      activityName: {
-        value: '',
-        edit: false
-      },
+      activityName: '',
+      activityNameEdit: false,
       userList: [],
       weightRange: [],
       currentNum: 1,
-      confirmEnable: false
+      confirmEnable: false,
+      confirmLoading: false,
+      deleteLoading: false
     }
 
     methods = {
       userListWeightChange: function (index, e) {
         this.userList[index].userWeight = this.weightRange[e.detail.value]
+        this.confirmEnable = true
+        if(!this.userList[index].add) {
+          this.userList[index].edit = true
+        }
+
       },
       addUser: function () {
         this.userList.push({
           userName: '新增成员' + this.currentNum,
           userWeight: 1,
-          edit: true
+          edit: false,
+          add: true
         })
         this.currentNum++
       },
       bindBlur: function (e) {
-        if(this.activityName.value !== e.detail.value) {
-          this.activityName.edit = true
-          this.activityName.value  = e.detail.value
+        if(this.activityName !== e.detail.value.trim()) {
+          this.activityNameEdit = true
+          this.confirmEnable = true
+          this.activityName = e.detail.value.trim()
         }
       },
       bindBlurUserList: function (index, e) {
-        this.userList[index].userName = e.detail.value
+        if(this.userList[index].userName !== e.detail.value.trim()) {
+          this.userList[index].userName = e.detail.value.trim()
+          this.confirmEnable = true
+          if(!this.userList[index].add) {
+            this.userList[index].edit = true
+          }
+        }
+      },
+      editActivity() {
+        if (!this.validate()) {
+          wepy.showToast({
+            title: '请填写完整',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          return
+        }
+        let activityUpdate = {
+          activityId: this.$parent.activityId,
+          activityName: this.activityName,
+          activityNameEdit: this.activityNameEdit,
+          userEditList: [],
+          userAddList: []
+        }
+        this.userList.forEach((item) => {
+          if(item.edit) {
+            activityUpdate.userEditList.push({
+              userId: item.userId,
+              userName: item.userName,
+              userWeight: item.userWeight
+            })
+          } else if(item.add) {
+            activityUpdate.userAddList.push({
+              userId: item.userId,
+              userName: item.userName,
+              userWeight: item.userWeight
+            })
+          }
+        })
+        this.confirmLoading = true
+        this.$parent.request({
+          url: '/activity/' + this.$parent.activityId,
+          data: activityUpdate,
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'PATCH'
+        }).then((res) => {
+          this.$parent.activityName = this.activityName
+          wepy.reLaunch({
+            url: 'mainActivity'
+          })
+        }).catch((error) => {
+          this.confirmLoading = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
+        })
       },
       deleteActivity() {
         wepy.showModal({
@@ -147,9 +218,27 @@
           confirmText: '删除',
           confirmColor: '#d81e06'
         }).then((res) => {
-
+          this.deleteLoading = true
+          return this.$parent.request({
+            url: '/activity/' + this.$parent.activityId,
+            header: {
+              Authorization: this.$parent.globalData.token
+            },
+            method: 'DELETE'
+          })
+        }).then((res) => {
+          wepy.reLaunch({
+            url: 'index'
+          })
         }).catch((res) => {
-
+          this.deleteLoading = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
         })
       }
     }
@@ -158,7 +247,50 @@
       for (let i = 1; i < 99; i++) {
         this.weightRange.push(i)
       }
-      //TODO
+      wepy.showLoading({
+        mask: true,
+        title: '加载中'
+      })
+      this.$parent.request({
+        url: '/activity/' + this.$parent.activityId,
+        header: {
+          Authorization: this.$parent.globalData.token
+        },
+        method: 'GET'
+      }).then((res) => {
+        wepy.hideLoading()
+        this.activityName = res.activityName
+        res.userDetailList.forEach((item) => {
+          this.userList.push({
+            userId: item.userId,
+            userName: item.userName,
+            userWeight: item.userWeight,
+            edit: false,
+            add: false
+          })
+        })
+        this.$apply()
+      }).catch((error) => {
+        wepy.hideLoading()
+        wepy.showToast({
+          title: '网络状况差',
+          image: './../images/删除.svg',
+          duration: 2000
+        })
+        console.log(error)
+      })
+    }
+
+    validate() {
+      if (this.activityName.trim() === '') {
+        return false
+      }
+      this.userList.forEach((item) => {
+        if (item.userName.trim() === '') {
+          return false
+        }
+      })
+      return true
     }
   }
 </script>
