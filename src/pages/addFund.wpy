@@ -274,7 +274,6 @@
           },
           method: 'POST'
         }).then((res) => {
-          this.$apply()
           wepy.reLaunch({
             url: 'mainActivity'
           })
