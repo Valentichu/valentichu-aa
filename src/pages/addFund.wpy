@@ -35,6 +35,7 @@
             <input class="weui-input pay"
                    value="{{fundAverage}}"
                    type="digit" placeholder="请输入交款金额"
+                   disabled="{{state === 'view'}}"
                    id="fundAverage"
                    bindblur="bindBlur"/>
           </view>
@@ -46,6 +47,7 @@
           <view class="weui-cell__bd">
             <input class="weui-input"
                    placeholder="请输入描述"
+                   disabled="{{state === 'view'}}"
                    value="{{description}}"
                    id="description"
                    bindblur="bindBlur"/>
@@ -57,6 +59,7 @@
           </view>
           <view class="weui-cell__bd">
             <picker class="weui-cell__bd"
+                    disabled="{{state === 'view'}}"
                     value="{{userSelected}}"
                     range="{{checkItems}}"
                     range-key="userName"
@@ -71,6 +74,7 @@
           </view>
           <view class="weui-cell__bd">
             <picker mode="date"
+                    disabled="{{state === 'view'}}"
                     value="{{createdDate}}"
                     start="2017-09-01"
                     end="2037-09-01"
@@ -98,6 +102,7 @@
             <label class="weui-cell">
               <checkbox class="weui-check"
                         value="{{index}}"
+                        disabled="{{state === 'view'}}"
                         checked="{{item.checked}}"/>
               <view class="weui-cell__hd weui-check__hd_in-checkbox">
                 <icon class="weui-icon-checkbox_circle"
@@ -116,6 +121,7 @@
             <!--将人数换算成weight数组的角标，如果人数为n对应weightRange数组的第[n-1]个，所以需要减1-->
             <picker class="weui-cell__bd"
                     value="{{item.userWeight - 1}}"
+                    disabled="{{state === 'view'}}"
                     range="{{weightRange}}"
                     @change="weightChange({{index}})">
               <view class="weui-input page__desc">人数{{item.userWeight}}</view>
@@ -130,6 +136,8 @@
           <view class="weui-cell__bd">
             <textarea class="weui-textarea"
                       placeholder="请输入备注"
+                      disabled="{{state === 'view'}}"
+                      value="{{note}}"
                       style="height: 3.3em"
                       id="note"
                       bindblur="bindBlur"/>
@@ -240,7 +248,7 @@
         this.checkedItemIndex = e.detail.value
       },
       userChange(e) {
-        this.userSelected = e.detail.value
+        this.userSelected = Number(e.detail.value)
       },
       bindBlur: function (e) {
         if (e.currentTarget.id === 'fundAverage') {
@@ -368,7 +376,7 @@
         item.itemType = this.typeSelected
         item.itemDescription = this.description
         item.itemNote = this.note
-        item.fundOrConsume = 1
+        item.fundOrConsume = 0
         item.createdDate = this.createdDate
         item.activityId = this.$parent.activityId
         item.userId = this.userId
@@ -376,13 +384,13 @@
         this.checkItems.forEach((checkItem, index) => {
           let itemDetail = {}
           if (index === this.userSelected) {
-            itemDetail.exp = this.total
+            itemDetail.bill = this.total
           } else {
-            itemDetail.exp = 0
+            itemDetail.bill = 0
           }
           itemDetail.activityId = this.$parent.activityId
-          itemDetail.bill = checkItem.bill
-          itemDetail.fundOrConsume = 1
+          itemDetail.exp = checkItem.exp
+          itemDetail.fundOrConsume = 0
           itemDetail.userId = checkItem.userId
           itemDetail.userWeight = checkItem.userWeight
           itemDetail.userName = checkItem.userName
@@ -492,6 +500,7 @@
             let checkItem = {}
             if(item.exp > 0) {
               checkItem.checked = true
+              weightTotal += item.userWeight
               this.checkedItemIndex.push(index.toString())
             } else {
               checkItem.checked =false
@@ -499,7 +508,6 @@
             checkItem.exp = 0
             checkItem.userName = item.userName
             checkItem.userWeight = item.userWeight
-            weightTotal += item.userWeight
             checkItem.userId = item.userId
             this.checkItems.push(checkItem)
             if (item.bill > 0) {

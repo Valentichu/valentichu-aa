@@ -37,7 +37,7 @@
       <view wx:if="{{fundList.length > 0}}">
         <view class="weui-cells__title">交款</view>
         <view class="weui-panel">
-          <navigator url="addFund"
+          <navigator url="addFund?itemId={{item.itemId}}"
                      class="weui-media-box weui-media-box_appmsg"
                      wx:for="{{fundList}}"
                      wx:key="{{item.itemId}}">
@@ -65,7 +65,7 @@
       <view wx:if="{{consumeList.length > 0}}">
         <view class="weui-cells__title">消费</view>
         <view class="weui-panel weui-panel_access">
-          <navigator url="addConsume"
+          <navigator url="addConsume?itemId={{item.itemId}}"
                      class="weui-media-box weui-media-box_appmsg"
                      wx:for="{{consumeList}}"
                      wx:key="{{item.itemId}}">

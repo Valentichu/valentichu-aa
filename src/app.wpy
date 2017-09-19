@@ -13,7 +13,7 @@
 <script>
   import wepy from 'wepy'
   import 'wepy-async-function'
-  const rootUrl = 'http://localhost'
+  const rootUrl = 'http://198.181.40.98'
 
   export default class extends wepy.app {
     config = {
