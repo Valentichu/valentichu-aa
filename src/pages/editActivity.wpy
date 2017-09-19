@@ -194,7 +194,7 @@
           header: {
             Authorization: this.$parent.globalData.token
           },
-          method: 'PATCH'
+          method: 'PUT'
         }).then((res) => {
           this.$parent.activityName = this.activityName
           wepy.reLaunch({
