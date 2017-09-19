@@ -146,10 +146,10 @@
         <view class="weui-tab__panel">
           <scroll-view class="weui-tab__content {{activeIndex == 0 ? 'display' :'hidden'}}" scroll-y>
             <view class="weui-panel">
-              <navigator url="{{item.fundOrConsume === 0 ? 'addFund' : 'addConsume'}}"
-                         class="weui-media-box weui-media-box_appmsg"
+              <navigator class="weui-media-box weui-media-box_appmsg"
+                         @tap="gotoItemView({{item.fundOrConsume}}, {{item.itemId}})"
                          wx:for="{{statistics.statisticsDetailList}}"
-                         wx:key="{{item.itemId}}  ">
+                         wx:key="{{item.itemId}}">
                 <view class="weui-media-box__hd_in-appmsg" wx:if="{{item.fundOrConsume === 0}}">
                   <image class="weui-media-box__thumb" src="./../images/付款.svg"/>
                 </view>
@@ -280,6 +280,18 @@
         wepy.navigateTo({
           url: 'settleDetail?userId=' + userId
         })
+      },
+      gotoItemView(fundOrConsume, itemId) {
+        console.log(fundOrConsume)
+        if(fundOrConsume === 0) {
+          wepy.navigateTo({
+            url: 'addFund?itemId=' + itemId
+          })
+        } else {
+          wepy.navigateTo({
+            url: 'addConsume?itemId=' + itemId
+          })
+        }
       }
     }
 

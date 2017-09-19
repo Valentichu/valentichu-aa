@@ -42,6 +42,7 @@
                    type="digit"
                    placeholder="请输入金额"
                    id="total"
+                   disabled="{{state === 'view'}}"
                    bindblur="bindBlur"/>
           </view>
         </view>
@@ -54,6 +55,7 @@
                    placeholder="请输入描述"
                    value="{{description}}"
                    id="description"
+                   disabled="{{state === 'view'}}"
                    bindblur="bindBlur"/>
           </view>
         </view>
@@ -66,6 +68,7 @@
                     value="{{userSelected}}"
                     range="{{checkItems}}"
                     range-key="userName"
+                    disabled="{{state === 'view'}}"
                     @change="userChange">
               <view class="weui-input">{{checkItems[userSelected].userName}}</view>
             </picker>
@@ -79,6 +82,7 @@
             <picker mode="date" value="{{createdDate}}"
                     start="2017-09-01"
                     end="2037-09-01"
+                    disabled="{{state === 'view'}}"
                     @change="dateChange">
               <view class="weui-input">{{createdDate}}</view>
             </picker>
@@ -94,6 +98,7 @@
             <label class="weui-cell">
               <checkbox class="weui-check"
                         value="{{index}}"
+                        disabled="{{state === 'view'}}"
                         checked="{{item.checked}}"/>
               <view class="weui-cell__hd weui-check__hd_in-checkbox">
                 <icon class="weui-icon-checkbox_circle"
@@ -110,6 +115,7 @@
             <picker class="weui-cell__bd"
                     value="{{item.userWeight - 1}}"
                     range="{{weightRange}}"
+                    disabled="{{state === 'view'}}"
                     @change="weightChange({{index}})">
               <view class="weui-input page__desc">人数{{item.userWeight}}</view>
             </picker>
@@ -123,8 +129,10 @@
           <view class="weui-cell__bd">
             <textarea class="weui-textarea"
                       placeholder="请输入备注"
+                      value="{{note}}"
                       style="height: 3.3em"
                       id="note"
+                      disabled="{{state === 'view'}}"
                       bindblur="bindBlur"/>
           </view>
         </view>
@@ -134,8 +142,31 @@
                 type="primary"
                 @tap="addItem"
                 loading="{{loading}}"
-                disabled="{{loading}}">
-          确定
+                disabled="{{loading}}"
+                wx:if="{{state === 'add'}}">
+          添加消费
+        </button>
+        <button class="weui-btn"
+                type="primary"
+                @tap="openEdit"
+                wx:if="{{state === 'view'}}">
+          修改消费
+        </button>
+        <button class="weui-btn"
+                type="primary"
+                @tap="editItem"
+                disabled = "{{confirmLoading || deleteLoading}}"
+                loading="{{confirmLoading}}"
+                wx:if="{{state === 'edit'}}">
+          确认修改
+        </button>
+        <button class="weui-btn"
+                type="warn"
+                @tap="deleteItem"
+                disabled = "{{confirmLoading || deleteLoading}}"
+                loading="{{deleteLoading}}"
+                wx:if="{{state === 'edit'}}">
+          删除消费
         </button>
       </view>
     </view>
@@ -189,6 +220,7 @@
 
     data = {
       userId: null,
+      itemId: null,
       typeRange: ['餐饮', '娱乐', '住宿', '出行'],
       description: '餐饮',
       note: '',
@@ -199,14 +231,19 @@
       weightRange: [],
       userSelected: 0,
       createdDate: '',
-      loading: false
+      loading: false,
+      confirmLoading: false,
+      deleteLoading: false,
+      state: 'add'
     }
 
     methods = {
       typeChange(e) {
-        this.typeSelected = e.currentTarget.id
-        if (this.typeRange.indexOf(this.description.trim()) !== -1) {
-          this.description = this.typeRange[e.currentTarget.id]
+        if(this.state !== 'view') {
+          this.typeSelected = e.currentTarget.id
+          if (this.typeRange.indexOf(this.description.trim()) !== -1) {
+            this.description = this.typeRange[e.currentTarget.id]
+          }
         }
       },
       weightChange(index, e) {
@@ -234,6 +271,9 @@
         } else {
           this[e.currentTarget.id] = e.detail.value
         }
+      },
+      openEdit() {
+        this.state = 'edit';
       },
       addItem: function () {
         if (!this.validate()) {
@@ -294,49 +334,189 @@
           })
           console.log(error)
         })
+      },
+      deleteItem() {
+        wepy.showModal({
+          title: '确认删除',
+          content: '是否确认删除？',
+          confirmText: '删除',
+          confirmColor: '#d81e06'
+        }).then((res) => {
+          this.deleteLoading = true
+          this.$apply()
+          return this.$parent.request({
+            url: '/activity/' + this.$parent.activityId +'/item/' + this.itemId,
+            header: {
+              Authorization: this.$parent.globalData.token
+            },
+            method: 'DELETE'
+          })
+        }).then((res) => {
+          wepy.reLaunch({
+            url: 'mainActivity'
+          })
+        }).catch((res) => {
+          this.deleteLoading = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
+        })
+      },
+      editItem() {
+        if (!this.validate()) {
+          wepy.showToast({
+            title: '请填写完整',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          return
+        }
+
+        this.confirmLoading = true
+        let item = {
+          itemDetailList: []
+        }
+        item.itemId = this.itemId;
+        item.itemType = this.typeSelected
+        item.itemDescription = this.description
+        item.itemNote = this.note
+        item.fundOrConsume = 1
+        item.createdDate = this.createdDate
+        item.activityId = this.$parent.activityId
+        item.userId = this.userId
+        item.itemTotal = this.total
+        this.checkItems.forEach((checkItem, index) => {
+          let itemDetail = {}
+          if (index === this.userSelected) {
+            itemDetail.exp = this.total
+          } else {
+            itemDetail.exp = 0
+          }
+          itemDetail.activityId = this.$parent.activityId
+          itemDetail.bill = checkItem.bill
+          itemDetail.fundOrConsume = 1
+          itemDetail.userId = checkItem.userId
+          itemDetail.userWeight = checkItem.userWeight
+          itemDetail.userName = checkItem.userName
+          item.itemDetailList.push(itemDetail)
+        })
+        this.$parent.request({
+          url: '/activity/' + this.$parent.activityId + '/item/' + this.itemId,
+          data: item,
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'PUT'
+        }).then((res) => {
+          wepy.reLaunch({
+            url: 'mainActivity'
+          })
+        }).catch((error) => {
+          this.confirmLoading = false
+          this.$apply()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
+        })
       }
     }
 
     onLoad(options) {
+      if(options.itemId) {
+        this.state =  'view'
+        this.itemId = options.itemId
+      }
+      for (let i = 1; i < 99; i++) {
+        this.weightRange.push(i)
+      }
       wepy.showLoading({
         mask: true,
         title: '加载中'
       })
-      this.$parent.request({
-        url: '/activity/' + this.$parent.activityId + '/user',
-        header: {
-          Authorization: this.$parent.globalData.token
-        },
-        method: 'GET'
-      }).then((res) => {
-        wepy.hideLoading()
-        res.forEach((item, index) => {
-          item.checked = true
-          item.bill = 0
-          this.checkItems.push(item)
-          this.checkedItemIndex.push(index.toString())
-          let user = {}
-          user.userName = item.userName
-          user.userId = item.userId
-          if (item.currentUser) {
-            this.userSelected = index
-            this.userId = item.userId
-          }
+      if (this.state === 'add') {
+        this.$parent.request({
+          url: '/activity/' + this.$parent.activityId + '/user',
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'GET'
+        }).then((res) => {
+          wepy.hideLoading()
+          res.forEach((item, index) => {
+            item.checked = true
+            item.bill = 0
+            this.checkItems.push(item)
+            this.checkedItemIndex.push(index.toString())
+            if (item.currentUser) {
+              this.userSelected = index
+              this.userId = item.userId
+            }
+          })
+          this.$apply()
+        }).catch((error) => {
+          wepy.hideLoading()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
         })
-        this.$apply()
-      }).catch((error) => {
-        wepy.hideLoading()
-        wepy.showToast({
-          title: '网络状况差',
-          image: './../images/删除.svg',
-          duration: 2000
+        this.createdDate = new Date().formatString('yyyy-MM-dd')
+      } else {
+        this.$parent.request({
+          url: '/activity/' + this.$parent.activityId + '/item/' + this.itemId ,
+          header: {
+            Authorization: this.$parent.globalData.token
+          },
+          method: 'GET'
+        }).then((res) => {
+          wepy.hideLoading()
+          res.forEach((item, index) => {
+            if(index === 0) {
+              this.typeSelected = item.itemType
+              this.description = item.itemDescription
+              this.createdDate = item.createdDate
+              this.note = item.itemNote
+              this.total = item.itemTotal
+            }
+            let checkItem = {}
+            if(item.bill > 0) {
+              checkItem.checked = true
+              this.checkedItemIndex.push(index.toString())
+            } else {
+              checkItem.checked =false
+            }
+            checkItem.exp = 0
+            checkItem.userName = item.userName
+            checkItem.userWeight = item.userWeight
+            checkItem.userId = item.userId
+            this.checkItems.push(checkItem)
+            if (item.exp > 0) {
+              this.userSelected = index
+            }
+            if(item.currentUser) {
+              this.userId = item.userId
+            }
+          })
+          this.$apply()
+        }).catch((error) => {
+          wepy.hideLoading()
+          wepy.showToast({
+            title: '网络状况差',
+            image: './../images/删除.svg',
+            duration: 2000
+          })
+          console.log(error)
         })
-        console.log(error)
-      })
-      for (let i = 1; i < 99; i++) {
-        this.weightRange.push(i)
       }
-      this.createdDate = new Date().formatString('yyyy-MM-dd')
     }
 
     validate() {
